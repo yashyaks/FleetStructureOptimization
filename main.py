@@ -32,3 +32,10 @@ purchase_summary = formulas.cost_of_buying_vehicles_in_year(
 )
 print('\noutput of cost_of_buying_vehicles_in_year:')
 pprint.pprint(purchase_summary)
+
+cost_profile = formulas.cost_profiles(
+    year_of_purchase = 2023,
+    op_year = 2025
+)
+print('\noutput of cost_profiles:')
+pprint.pprint(cost_profile)
