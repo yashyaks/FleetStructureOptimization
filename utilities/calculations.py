@@ -59,3 +59,28 @@ class formulas:
         cursor.execute(query)
         cost_profile = cursor.fetchall()
         return cost_profile
+    
+    def yearly_insurace_cost(self, current_fleet_details: list, op_year: int):
+        """
+        Returns Insurance cost for the operating year
+        Args:
+            current_fleet_details (list): list of details of vehicles
+                (ID, vehicle, size, year_of_purchase, cost, yearly_range, distance, number_of_vehicles)
+            op_year (int): operating year
+        Returns:
+            yearly_insurance_cost (int): yearly insurance cost
+        """
+        total_fleet_insurance_cost = 0
+        for i in range(len(current_fleet_details)):
+            cost_profile = self.cost_profiles(current_fleet_details[i][3], op_year)
+            insurance_percent = cost_profile[0][2]
+            print('insurance_details: ', current_fleet_details[i], insurance_percent )
+            insurance_cost = current_fleet_details[i][4]*insurance_percent*current_fleet_details[i][7]
+            total_fleet_insurance_cost += insurance_cost
+        return total_fleet_insurance_cost
+            
+            
+            
+            
+        
+        
