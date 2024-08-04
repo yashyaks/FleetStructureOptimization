@@ -24,7 +24,6 @@ class formulas:
         """
         Returns the cost of buying vehicles in a given year
         Args:
-            connection: connection object to the specified MySQL database.
             vehicle_details (list): list of details of vehicles
             units_purchased (list): list containing the IDs and the number of units purchased
         Returns:
