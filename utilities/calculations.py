@@ -78,6 +78,25 @@ class formulas:
             insurance_cost = current_fleet_details[i][4]*insurance_percent*current_fleet_details[i][7]
             total_fleet_insurance_cost += insurance_cost
         return total_fleet_insurance_cost
+    
+    def yearly_maintenance_cost(self, current_fleet_details: list, op_year: int):
+        """
+        Returns Maintenance cost for the operating year
+        Args:
+            current_fleet_details (list): list of details of vehicles
+                (ID, vehicle, size, year_of_purchase, cost, yearly_range, distance, number_of_vehicles)
+            op_year (int): operating year
+        Returns:
+            yearly_maintenance_cost (int): yearly maintenance cost
+        """
+        total_fleet_maintenance_cost = 0
+        for i in range(len(current_fleet_details)):
+            cost_profile = self.cost_profiles(current_fleet_details[i][3], op_year)
+            maintenance_percent = cost_profile[0][3]
+            print('maintenance_details: ', current_fleet_details[i], maintenance_percent )
+            maintenance_cost = current_fleet_details[i][4]*maintenance_percent*current_fleet_details[i][7]
+            total_fleet_maintenance_cost += maintenance_cost
+        return total_fleet_maintenance_cost
             
             
             

@@ -47,3 +47,12 @@ current_fleet_details = [
 total_fleet_insurance_cost = formulas.yearly_insurace_cost(current_fleet_details, 2025)
 print('\noutput of total_fleet_insurance_cost:')
 pprint.pprint(total_fleet_insurance_cost)
+
+current_fleet_details = [
+    ('BEV_S1_2023', 'BEV', 'S1', 2023, 187000, 102000, 50000, 10),
+    ('Diesel_S2_2023', 'Diesel', 'S2', 2020, 104000, 106000, 60000, 5),
+    ('LNG_S3_2023', 'LNG', 'S3', 2023, 151136, 73000, 45000, 8)
+]
+total_fleet_maintainence_cost = formulas.yearly_maintenance_cost(current_fleet_details, 2025)
+print('\noutput of total_fleet_maintainence_cost:')
+pprint.pprint(total_fleet_maintainence_cost)
