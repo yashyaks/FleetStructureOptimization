@@ -12,7 +12,7 @@ class formulas:
         Returns:
             vehicle_details (list): list of details of vehicles
         """
-        connection = MySQLOperations().create_connection('fleet_data')
+        connection = MySQLOperations().create_connection('fleet-data')
         cursor = connection.cursor()
         query = f"""SELECT * FROM vehicles WHERE year = {year}"""
         print('\nquery run on fucntion call vehciles_purchased_in_year: ', query)
@@ -51,7 +51,7 @@ class formulas:
         Returns:
             cost_profile (list): list of cost profile information
         """
-        connection = MySQLOperations().create_connection('fleet_data')
+        connection = MySQLOperations().create_connection('fleet-data')
         end_of_year = op_year - year_of_purchase
         cursor = connection.cursor()
         query = f"""SELECT * FROM cost_profiles WHERE end_of_year = {end_of_year}"""

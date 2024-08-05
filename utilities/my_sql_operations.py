@@ -9,6 +9,7 @@ class MySQLOperations:
         Set MySQL connection parameters using environment variables
         """
         self.host = os.getenv('MYSQL_HOST')
+        self.port = os.getenv('MYSQL_PORT')
         self.user = os.getenv('MYSQL_USER')
         self.password = os.getenv('MYSQL_PASSWORD')
 
@@ -25,6 +26,7 @@ class MySQLOperations:
             host = self.host,
             user = self.user ,
             password = self.password,
-            database = database
+            database = database, 
+            port = self.port
         )
         return connection
