@@ -65,7 +65,7 @@ class formulas:
         Returns Insurance cost for the operating year
         Args:
             current_fleet_details (list): list of details of vehicles
-                (ID, vehicle, size, year_of_purchase, cost, yearly_range, distance, number_of_vehicles)
+                (ID, vehicle, size, year_of_purchase, cost, yearly_range, distance, number_of_vehicles, distance_per_vehicle)
             op_year (int): operating year
         Returns:
             yearly_insurance_cost (int): yearly insurance cost
@@ -84,7 +84,7 @@ class formulas:
         Returns Maintenance cost for the operating year
         Args:
             current_fleet_details (list): list of details of vehicles
-                (ID, vehicle, size, year_of_purchase, cost, yearly_range, distance, number_of_vehicles)
+                (ID, vehicle, size, year_of_purchase, cost, yearly_range, distance, number_of_vehicles, distance_per_vehicle)
             op_year (int): operating year
         Returns:
             yearly_maintenance_cost (int): yearly maintenance cost
