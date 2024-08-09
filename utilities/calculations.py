@@ -139,9 +139,13 @@ class formulas:
         
     def recievables_from_sale_of_vehicle(self, fleet_for_resale: list, op_year: int):
         """
-        fleet_for_resale (list): list of details of vehicles
-         (ID, vehicle, year_of_purchase, cost, number_of_vehicles)
-        op_year (int): operating year
+        Returns total recievables from sale of vehicles
+        Args:
+            fleet_for_resale (list): list of details of vehicles
+            (ID, vehicle, year_of_purchase, cost, number_of_vehicles)
+            op_year (int): operating year
+        Returns:
+            recievables (int): total recievables from sale of vehicles
         """
         total_recievables = 0
         for i in range(len(fleet_for_resale)):
@@ -154,7 +158,12 @@ class formulas:
     
     def total_fleet_cost_for_current_op_year(self, vehicle_details:list, units_purchased: list, current_fleet_details: list, fleet_for_resale: list,op_year: int):
         """
-        
+        Returns total cost of operating the fleet
+        Args:
+            vehicle_details (list): list of details of vehicles
+            units_purchased (list): list containing the IDs and the number of units purchased
+            current_fleet_details (list): list of details of vehicles
+            fleet_for_resale (list): list of details of vehicles
         """
         total_cost = 0
         purchase_summary = self.cost_of_buying_vehicles_in_year(vehicle_details, units_purchased)
