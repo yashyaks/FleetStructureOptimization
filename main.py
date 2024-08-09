@@ -85,3 +85,16 @@ pprint.pprint(total_recievables)
 total_cost = formulas.total_fleet_cost_for_current_op_year(vehicle_details, units_purchased, current_fleet_details, fleet_for_resale, 2025)
 print('\noutput of total_fleet_cost_for_current_op_year:')
 pprint.pprint(total_recievables)
+
+
+### Example usage of CarbonEmissions class
+from utilities.carbon_emmissions import CarbonEmissions
+carbon_emissions = CarbonEmissions()
+
+carbon_emissions_limit = carbon_emissions.carbon_emissions_limit(2025)
+print('\noutput of carbon_emissions_limit:')
+pprint.pprint(carbon_emissions_limit)
+
+total_carbon_emissions = carbon_emissions.total_carbon_emmissions(current_fleet_details, 2025)
+print('\noutput of total_carbon_emissions:')
+pprint.pprint(total_carbon_emissions)
