@@ -4,7 +4,7 @@ class formulas:
     def __init__(self):
         pass
     
-    def vehciles_purchased_in_year(self, year: int):
+    def vehciles_that_can_be_purchased_in_year(self, year: int):
         """
         Returns the details of every vehicle available for purchase in a given year
         Args:
@@ -60,12 +60,12 @@ class formulas:
         cost_profile = cursor.fetchall()
         return cost_profile
     
-    def yearly_insurace_cost(self, current_fleet_details: list, op_year: int):
+    def yearly_insurance_cost(self, current_fleet_details: list, op_year: int):
         """
         Returns Insurance cost for the operating year
         Args:
             current_fleet_details (list): list of details of vehicles
-                (ID, vehicle, size, year_of_purchase, cost, yearly_range, distance, number_of_vehicles, distance_per_vehicle)
+                (ID, vehicle, size_bucket, year_of_purchase, cost, yearly_range, distance_bucket, number_of_vehicles, distance_per_vehicle, fuel, cosumption_unitfuel_per_km)
             op_year (int): operating year
         Returns:
             yearly_insurance_cost (int): yearly insurance cost
@@ -84,7 +84,7 @@ class formulas:
         Returns Maintenance cost for the operating year
         Args:
             current_fleet_details (list): list of details of vehicles
-                (ID, vehicle, size, year_of_purchase, cost, yearly_range, distance, number_of_vehicles, distance_per_vehicle)
+                (ID, vehicle, size_bucket, year_of_purchase, cost, yearly_range, distance_bucket, number_of_vehicles, distance_per_vehicle, fuel, cosumption_unitfuel_per_km)
             op_year (int): operating year
         Returns:
             yearly_maintenance_cost (int): yearly maintenance cost
@@ -98,8 +98,69 @@ class formulas:
             total_fleet_maintenance_cost += maintenance_cost
         return total_fleet_maintenance_cost
             
-            
-            
-            
+    def fuel_profile(self, current_vehicle_details: tuple, op_year: int):
+        """
+        Extracts fuel profile for the vehicle
+        Args:
+            current_vehicle_details (tuple): list of details of vehicles
+                (ID, vehicle, size_bucket, year_of_purchase, cost, yearly_range, distance_bucket, number_of_vehicles, distance_per_vehicle, fuel, cosumption_unitfuel_per_km)
+            op_year (int): operating year
+        Returns:
+            fuel_profile (list): list of fuel profile information
+        """
+        connection = MySQLOperations().create_connection('fleet-data')
+        cursor = connection.cursor()
+        print(current_vehicle_details)
+        query = f""" SELECT * FROM fuels WHERE YEAR = {op_year} AND FUEL = '{current_vehicle_details[9]}' """
+        print('\nquery run on fucntion call fuel_profile: ', query)
+        cursor.execute(query)
+        cost_profile = cursor.fetchall()
+        return cost_profile[0]
         
+    def yearly_fuel_cost(self, current_fleet_details: list, op_year: int):
+        """
+        Returns yearly fuel cost
+        Args:
+            current_fleet_details (list): list of details of vehicles
+                (ID, vehicle, size_bucket, year_of_purchase, cost, yearly_range, distance_bucket, number_of_vehicles, distance_per_vehicle, fuel, cosumption_unitfuel_per_km)
+            op_year (int): operating year
+        Returns:
+            yearly_fuel_cost (int): yearly fuel cost
+        """
+        yearly_fuel_cost = 0
+        for i in range(len(current_fleet_details)):
+            current_vehicle_details = current_fleet_details[i]
+            total_yearly_vehicle_fuel_cost = 0
+            fuel_profile = self.fuel_profile(current_vehicle_details, op_year)
+            total_yearly_vehicle_fuel_cost = current_vehicle_details[8]*current_vehicle_details[10]*fuel_profile[3]*current_vehicle_details[7]
+            yearly_fuel_cost += total_yearly_vehicle_fuel_cost
+            
+            return yearly_fuel_cost
         
+    def recievables_from_sale_of_vehicle(self, fleet_for_resale: list, op_year: int):
+        """
+        fleet_for_resale (list): list of details of vehicles
+         (ID, vehicle, year_of_purchase, cost, number_of_vehicles)
+        op_year (int): operating year
+        """
+        total_recievables = 0
+        for i in range(len(fleet_for_resale)):
+            recievables = 0
+            current_vehicle_details = fleet_for_resale[i]
+            cost_profile = self.cost_profiles(current_vehicle_details[2], op_year)
+            recievables = current_vehicle_details[3]*(cost_profile[0][1]/100)*current_vehicle_details[4]
+            total_recievables += recievables
+        return recievables
+    
+    def total_fleet_cost_for_current_op_year(self, vehicle_details:list, units_purchased: list, current_fleet_details: list, fleet_for_resale: list,op_year: int):
+        """
+        
+        """
+        total_cost = 0
+        purchase_summary = self.cost_of_buying_vehicles_in_year(vehicle_details, units_purchased)
+        total_cost += purchase_summary['total']
+        total_cost += self.yearly_fuel_cost(current_fleet_details, op_year)
+        total_cost += self.yearly_maintenance_cost(current_fleet_details, op_year)
+        total_cost += self.yearly_insurance_cost(current_fleet_details, op_year)
+        total_cost -= self.recievables_from_sale_of_vehicle(fleet_for_resale, op_year)
+        return total_cost
