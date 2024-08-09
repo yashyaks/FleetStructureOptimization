@@ -114,8 +114,8 @@ class formulas:
         query = f""" SELECT * FROM fuels WHERE YEAR = {op_year} AND FUEL = '{current_vehicle_details[9]}' """
         print('\nquery run on fucntion call fuel_profile: ', query)
         cursor.execute(query)
-        cost_profile = cursor.fetchall()
-        return cost_profile[0]
+        fuel_profile = cursor.fetchall()
+        return fuel_profile[0]
         
     def yearly_fuel_cost(self, current_fleet_details: list, op_year: int):
         """
