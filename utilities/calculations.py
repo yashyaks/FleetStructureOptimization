@@ -40,6 +40,8 @@ class formulas:
                     purchase_summary[count] = [vehicle_details[i][0], units_purchased[j][1], cost]
                     total_cost += cost
                     count += 1
+                #else: 
+                    """handle error"""
         purchase_summary['total'] = total_cost
         return purchase_summary
     
@@ -58,6 +60,7 @@ class formulas:
         print('\nquery run on fucntion call cost_profiles: ', query)
         cursor.execute(query)
         cost_profile = cursor.fetchall()
+        ## make output consistent with fuel_profie fn
         return cost_profile
     
     def yearly_insurance_cost(self, current_fleet_details: list, op_year: int):
@@ -127,11 +130,16 @@ class formulas:
         Returns:
             yearly_fuel_cost (int): yearly fuel cost
         """
+        """
+        handle this constraint: Distance_per_vehicle(km) Should > 0 and <= Yearly range of that
+model.
+        """
         yearly_fuel_cost = 0
         for i in range(len(current_fleet_details)):
             current_vehicle_details = current_fleet_details[i]
             total_yearly_vehicle_fuel_cost = 0
             fuel_profile = self.fuel_profile(current_vehicle_details, op_year)
+            ### check logic of formula
             total_yearly_vehicle_fuel_cost = current_vehicle_details[8]*current_vehicle_details[10]*fuel_profile[3]*current_vehicle_details[7]
             yearly_fuel_cost += total_yearly_vehicle_fuel_cost
             
