@@ -32,19 +32,18 @@ class formulas:
         purchase_summary = {}
         total_cost = 0
         count = 0
-        for i in range(len(vehicle_details)):
-            for j in range(len(units_purchased)):
-                if vehicle_details[i][0] == units_purchased[j][0]:
+        for i in range(len(units_purchased)):
+            for j in range(len(vehicle_details)):
+                if units_purchased[i][0] == vehicle_details[j][0]:
                     cost = 0
-                    cost = vehicle_details[i][4]*units_purchased[j][1]
-                    purchase_summary[count] = [vehicle_details[i][0], units_purchased[j][1], cost]
+                    cost = units_purchased[i][1]*vehicle_details[j][4]
+                    purchase_summary[count] = [units_purchased[i][1], vehicle_details[j][0], cost]
                     total_cost += cost
                     count += 1
-                #else: 
-                    """handle error"""
         purchase_summary['total'] = total_cost
         return purchase_summary
-    
+
+
     def cost_profiles(self, year_of_purchase: int, op_year: int):
         """
         Returns cost profile (resale, insurance, maintenance) for the age of the vehicle
@@ -60,8 +59,7 @@ class formulas:
         print('\nquery run on fucntion call cost_profiles: ', query)
         cursor.execute(query)
         cost_profile = cursor.fetchall()
-        ## make output consistent with fuel_profie fn
-        return cost_profile
+        return cost_profile[0]
     
     def yearly_insurance_cost(self, current_fleet_details: list, op_year: int):
         """
@@ -76,7 +74,7 @@ class formulas:
         total_fleet_insurance_cost = 0
         for i in range(len(current_fleet_details)):
             cost_profile = self.cost_profiles(current_fleet_details[i][3], op_year)
-            insurance_percent = cost_profile[0][2]
+            insurance_percent = cost_profile[2]
             print('insurance_details: ', current_fleet_details[i], insurance_percent )
             insurance_cost = current_fleet_details[i][4]*insurance_percent*current_fleet_details[i][7]
             total_fleet_insurance_cost += insurance_cost
@@ -95,7 +93,7 @@ class formulas:
         total_fleet_maintenance_cost = 0
         for i in range(len(current_fleet_details)):
             cost_profile = self.cost_profiles(current_fleet_details[i][3], op_year)
-            maintenance_percent = cost_profile[0][3]
+            maintenance_percent = cost_profile[3]
             print('maintenance_details: ', current_fleet_details[i], maintenance_percent )
             maintenance_cost = current_fleet_details[i][4]*maintenance_percent*current_fleet_details[i][7]
             total_fleet_maintenance_cost += maintenance_cost
@@ -139,7 +137,6 @@ model.
             current_vehicle_details = current_fleet_details[i]
             total_yearly_vehicle_fuel_cost = 0
             fuel_profile = self.fuel_profile(current_vehicle_details, op_year)
-            ### check logic of formula
             total_yearly_vehicle_fuel_cost = current_vehicle_details[8]*current_vehicle_details[10]*fuel_profile[3]*current_vehicle_details[7]
             yearly_fuel_cost += total_yearly_vehicle_fuel_cost
             
@@ -160,7 +157,7 @@ model.
             recievables = 0
             current_vehicle_details = fleet_for_resale[i]
             cost_profile = self.cost_profiles(current_vehicle_details[2], op_year)
-            recievables = current_vehicle_details[3]*(cost_profile[0][1]/100)*current_vehicle_details[4]
+            recievables = current_vehicle_details[3]*(cost_profile[1]/100)*current_vehicle_details[4]
             total_recievables += recievables
         return recievables
     
