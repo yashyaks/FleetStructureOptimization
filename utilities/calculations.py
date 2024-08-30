@@ -102,21 +102,24 @@ class formulas:
     def fuel_profile(self, current_vehicle_details: tuple, op_year: int):
         """
         Extracts fuel profile for the vehicle
-        Args:
-            current_vehicle_details (tuple): list of details of vehicles
-                (ID, vehicle, size_bucket, year_of_purchase, cost, yearly_range, distance_bucket, number_of_vehicles, distance_per_vehicle, fuel, cosumption_unitfuel_per_km)
-            op_year (int): operating year
-        Returns:
-            fuel_profile (list): list of fuel profile information
         """
         connection = MySQLOperations().create_connection('fleet-data')
         cursor = connection.cursor()
-        print(current_vehicle_details)
-        query = f""" SELECT * FROM fuels WHERE YEAR = {op_year} AND FUEL = '{current_vehicle_details[9]}' """
-        print('\nquery run on fucntion call fuel_profile: ', query)
+        query = f""" SELECT * FROM fuels WHERE YEAR = {op_year} AND FUEL = '{current_vehicle_details.iloc[4]}' """
         cursor.execute(query)
         fuel_profile = cursor.fetchall()
         return fuel_profile[0]
+    
+    def vehicle_fuel_consumption(self, current_vehicle_details: tuple):
+        """
+        Extracts consumption_unitfuel_per_km from vehicles_fuels
+        """
+        connection = MySQLOperations().create_connection('fleet-data')
+        cursor = connection.cursor()
+        query = f""" SELECT * FROM vehicles_fuels WHERE ID = '{current_vehicle_details.iloc[1]}' """
+        cursor.execute(query)
+        fuel_consumption_profile = cursor.fetchall()
+        return fuel_consumption_profile[0]
         
     def yearly_fuel_cost(self, current_fleet_details: list, op_year: int):
         """
@@ -129,8 +132,7 @@ class formulas:
             yearly_fuel_cost (int): yearly fuel cost
         """
         """
-        handle this constraint: Distance_per_vehicle(km) Should > 0 and <= Yearly range of that
-model.
+        handle this constraint: Distance_per_vehicle(km) Should > 0 and <= Yearly range of that model.
         """
         yearly_fuel_cost = 0
         for i in range(len(current_fleet_details)):
