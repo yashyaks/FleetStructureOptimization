@@ -1,6 +1,6 @@
 from utilities.my_sql_operations import MySQLOperations
 
-class formulas:
+class Costs:
     def __init__(self):
         pass
     
