@@ -2,7 +2,6 @@ import pandas as pd
 import pprint
 from utilities.carbon_emmissions import CarbonEmissions
 from utilities.costs import Costs
-import time
 
 def main(path):
     df = pd.read_csv(path)
