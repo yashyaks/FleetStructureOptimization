@@ -39,7 +39,7 @@ class MySQLOperations:
         Returns:
             list: list of tuples containing the fetched data.
         """
-        connection = self.create_connection('fleet_data')
+        connection = self.create_connection('fleet-data')
         cursor = connection.cursor()
         cursor.execute(query)
         data = cursor.fetchall()

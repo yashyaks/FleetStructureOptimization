@@ -42,7 +42,7 @@ class CarbonEmissions:
         """     
         my_sql_operations = MySQLOperations() 
         
-        query = f"""SELECT * FROM fuels WHERE year = {op_year}"""
+        query = f"""SELECT fuel, emissions_co2_per_unit_fuel FROM fuels WHERE year = {op_year}"""
         fuel_data, columns = my_sql_operations.fetch_data(query) 
         fuel_df = pd.DataFrame(fuel_data, columns=columns)
         
