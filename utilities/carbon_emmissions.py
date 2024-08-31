@@ -4,7 +4,7 @@ import pandas as pd
 
 class CarbonEmissions:
     def __init__(self):
-        pass
+        self.my_sql_operations = MySQLOperations().fetch_data
     def carbon_emissions_limit(self, op_year: int):
         """
         Calculates carbon emissions limit
@@ -39,22 +39,16 @@ class CarbonEmissions:
     def total_carbon_emmissions_JOIN(self, fleet_details: pd.DataFrame, op_year: int):
         """
         Calculates total carbon emissions USING JOINS
-        """        
-        connection = MySQLOperations().create_connection('fleet-data')
-        cursor = connection.cursor()
+        """     
+        my_sql_operations = MySQLOperations() 
+        
         query = f"""SELECT * FROM fuels WHERE year = {op_year}"""
-        cursor.execute(query)
-        fuel_data = cursor.fetchall()
-        columns = [desc[0] for desc in cursor.description]
+        fuel_data, columns = my_sql_operations.fetch_data(query) 
         fuel_df = pd.DataFrame(fuel_data, columns=columns)
         
         query = f"""SELECT * FROM vehicles_fuels"""
-        cursor.execute(query)
-        vehicles_fuels_data = cursor.fetchall()
-        columns = [desc[0] for desc in cursor.description]
+        vehicles_fuels_data, columns = my_sql_operations.fetch_data(query)
         vehicles_fuels_df = pd.DataFrame(vehicles_fuels_data, columns=columns)
-        cursor.close()
-        connection.close()
 
         merged_df = pd.merge(
             pd.merge(fleet_details, fuel_df, left_on='Fuel', right_on='fuel', how='left'),
@@ -68,7 +62,9 @@ class CarbonEmissions:
             merged_df['consumption_unitfuel_per_km']
         )
         total_emissions = merged_df['carbon_emissions'].sum()
+        
         emissions_dict = merged_df.set_index('ID')['carbon_emissions'].to_dict()
         emissions_dict['TOTAL'] = float(total_emissions)
+        
         return emissions_dict
 

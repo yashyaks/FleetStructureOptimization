@@ -30,3 +30,20 @@ class MySQLOperations:
             port = self.port
         )
         return connection
+    
+    def fetch_data(self, query):
+        """
+        Fetch data from the MySQL database
+        Args:
+            query (str): SQL query to fetch data from the MySQL database.
+        Returns:
+            list: list of tuples containing the fetched data.
+        """
+        connection = self.create_connection('fleet_data')
+        cursor = connection.cursor()
+        cursor.execute(query)
+        data = cursor.fetchall()
+        columns = [desc[0] for desc in cursor.description]
+        cursor.close()
+        connection.close()
+        return data, columns
