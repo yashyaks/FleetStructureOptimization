@@ -1,4 +1,5 @@
 from utilities.my_sql_operations import MySQLOperations
+import pandas as pd
 """
 ALL INPUT NEEDS TO COME FROM CSV
 """
@@ -6,43 +7,27 @@ class Costs:
     def __init__(self):
         pass
     
-    def vehciles_that_can_be_purchased_in_year(self, year: int):
-        """
-        DEPRECATED - REMOVE BEFORE COMMIT
-        Args:
-            year (int): year of interest
-        Returns:
-            vehicle_details (list): list of details of vehicles
-        """
-        connection = MySQLOperations().create_connection('fleet-data')
-        cursor = connection.cursor()
-        query = f"""SELECT * FROM vehicles WHERE year = {year}"""
-        print('\nquery run on fucntion call vehciles_purchased_in_year: ', query)
-        cursor.execute(query)
-        vehicle_details = cursor.fetchall()
-        return vehicle_details
-    
-    def buy_costs(self, vehicle_details: list, units_purchased: list):
+    def buy_costs(self, fleet_details: pd.DataFrame, op_year: int):
         """
         Returns the cost of buying vehicles in a given year
-        Args:
-            vehicle_details (list): list of details of vehicles
-            units_purchased (list): list containing the IDs and the number of units purchased
-        Returns:
-            purchase_summary (dict): cost of buying vehicles in a given year
         """
         purchase_summary = {}
-        total_cost = 0
-        count = 0
-        for i in range(len(units_purchased)):
-            for j in range(len(vehicle_details)):
-                if units_purchased[i][0] == vehicle_details[j][0]:
-                    cost = 0
-                    cost = units_purchased[i][1]*vehicle_details[j][4]
-                    purchase_summary[count] = [units_purchased[i][1], vehicle_details[j][0], cost]
-                    total_cost += cost
-                    count += 1
-        purchase_summary['total'] = total_cost
+        vehciles_to_buy = fleet_details[fleet_details['Type'] == 'Buy']
+        
+        my_sql_operations = MySQLOperations() 
+        query = f"""SELECT id, cost FROM vehicles WHERE year = {op_year}"""
+        vehicle_costs, columns = my_sql_operations.fetch_data(query) 
+        vehicle_costs_df = pd.DataFrame(vehicle_costs, columns=columns)
+        merged_df = pd.merge(vehciles_to_buy, vehicle_costs_df, left_on='ID', right_on='id', how='left')
+        merged_df['line_item_cost'] = (
+            merged_df['cost'] * 
+            merged_df['Num_Vehicles']
+        )
+        total_cost = merged_df['line_item_cost'].sum()
+        
+        purchase_summary = merged_df.set_index('ID')['line_item_cost'].to_dict()
+        purchase_summary['TOTAL'] = float(total_cost)
+        
         return purchase_summary
 
     def cost_profiles(self, year_of_purchase: int, op_year: int):

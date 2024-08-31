@@ -8,17 +8,18 @@ def main(path):
     op_year = 2025
     
     ### Carbon Emissions Calculations ###
-    carbon_emissions = CarbonEmissions()
+    # carbon_emissions = CarbonEmissions()
     
-    carbon_emissions_limit = carbon_emissions.carbon_emissions_limit(op_year)
-    print(f"Carbon Emissions Limit for the given year: {carbon_emissions_limit}")
+    # carbon_emissions_limit = carbon_emissions.carbon_emissions_limit(op_year)
+    # print(f"Carbon Emissions Limit for the given year: {carbon_emissions_limit}")
     
-    emissions_dict = carbon_emissions.total_carbon_emmissions(df, op_year)
-    pprint.pprint(emissions_dict)
+    # emissions_dict = carbon_emissions.total_carbon_emmissions(df, op_year)
+    # pprint.pprint(emissions_dict)
         
     ### Costs Calculations ###
     costs = Costs()
-    
+    purchase_summary = costs.buy_costs(df, op_year)
+    pprint.pprint(purchase_summary)
     
 if __name__ == "__main__":
     path = 'sample_opyear_2025.csv'
