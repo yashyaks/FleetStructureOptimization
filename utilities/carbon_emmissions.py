@@ -1,5 +1,5 @@
 from utilities.my_sql_operations import MySQLOperations
-from utilities.calculations import formulas
+from utilities.costs import Costs
 import pandas as pd
 
 class CarbonEmissions:
@@ -20,14 +20,14 @@ class CarbonEmissions:
         """
         Calculates total carbon emissions
         """
-        formula = formulas()  
+        costs = Costs()  
         emissions_dict = {}
         total_emissions = 0
         for i in range(len(fleet_details)):
             emissions_from_vehicle = 0
             current_vehicle_details = fleet_details.iloc[i]
-            fuel_profile = formula.fuel_profile(current_vehicle_details, op_year)
-            vehicle_fuel_consumption = formula.vehicle_fuel_consumption(current_vehicle_details) 
+            fuel_profile = costs.fuel_profile(current_vehicle_details, op_year)
+            vehicle_fuel_consumption = costs.vehicle_fuel_consumption(current_vehicle_details) 
             # print(f"\n{current_vehicle_details['ID']}")     
             emissions_from_vehicle = current_vehicle_details[6]*current_vehicle_details[2]*vehicle_fuel_consumption[2]*fuel_profile[2]
             # print(emissions_from_vehicle,current_vehicle_details[6],current_vehicle_details[2],vehicle_fuel_consumption[2],fuel_profile[2])

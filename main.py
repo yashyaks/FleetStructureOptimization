@@ -1,14 +1,24 @@
 import pandas as pd
 import pprint
 from utilities.carbon_emmissions import CarbonEmissions
+from utilities.costs import Costs
 
 def main(path):
-    carbon_emissions = CarbonEmissions()
     df = pd.read_csv(path)
-    emissions_dict = carbon_emissions.total_carbon_emmissions(df, 2025)
+    op_year = 2025
+    
+    ### Carbon Emissions Calculations ###
+    carbon_emissions = CarbonEmissions()
+    
+    emissions_dict = carbon_emissions.total_carbon_emmissions(df, op_year)
     pprint.pprint(emissions_dict)
-    carbon_emissions_limit = carbon_emissions.carbon_emissions_limit(2025)
+
+    carbon_emissions_limit = carbon_emissions.carbon_emissions_limit(op_year)
     print(f"Carbon Emissions Limit for the given year: {carbon_emissions_limit}")
+    
+    ### Costs Calculations ###
+    costs = Costs()
+    
     
 if __name__ == "__main__":
     path = 'sample_opyear_2025.csv'

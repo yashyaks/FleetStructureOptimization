@@ -2,8 +2,8 @@ import pprint
 
 ### Example usage of formulas class
 
-from utilities.calculations import formulas
-formulas = formulas()
+from utilities.costs import Costs
+formulas = Costs()
 
 vehicle_details = formulas.vehciles_that_can_be_purchased_in_year(
     year = '2023'

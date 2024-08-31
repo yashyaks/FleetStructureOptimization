@@ -1,12 +1,14 @@
 from utilities.my_sql_operations import MySQLOperations
-
-class formulas:
+"""
+ALL INPUT NEEDS TO COME FROM CSV
+"""
+class Costs:
     def __init__(self):
         pass
     
     def vehciles_that_can_be_purchased_in_year(self, year: int):
         """
-        Returns the details of every vehicle available for purchase in a given year
+        DEPRECATED - REMOVE BEFORE COMMIT
         Args:
             year (int): year of interest
         Returns:
@@ -20,7 +22,7 @@ class formulas:
         vehicle_details = cursor.fetchall()
         return vehicle_details
     
-    def cost_of_buying_vehicles_in_year(self, vehicle_details: list, units_purchased: list):
+    def buy_costs(self, vehicle_details: list, units_purchased: list):
         """
         Returns the cost of buying vehicles in a given year
         Args:
@@ -43,9 +45,9 @@ class formulas:
         purchase_summary['total'] = total_cost
         return purchase_summary
 
-
     def cost_profiles(self, year_of_purchase: int, op_year: int):
         """
+        MOVE TO A UTILITY CLASS
         Returns cost profile (resale, insurance, maintenance) for the age of the vehicle
         Args:
             op_year (int): operating year
@@ -101,6 +103,7 @@ class formulas:
             
     def fuel_profile(self, current_vehicle_details: tuple, op_year: int):
         """
+        MOVE TO A UTILITY CLASS
         Extracts fuel profile for the vehicle
         """
         connection = MySQLOperations().create_connection('fleet-data')
@@ -112,6 +115,7 @@ class formulas:
     
     def vehicle_fuel_consumption(self, current_vehicle_details: tuple):
         """
+        MOVE TO A UTILITY CLASS
         Extracts consumption_unitfuel_per_km from vehicles_fuels
         """
         connection = MySQLOperations().create_connection('fleet-data')
@@ -144,7 +148,7 @@ class formulas:
             
             return yearly_fuel_cost
         
-    def recievables_from_sale_of_vehicle(self, fleet_for_resale: list, op_year: int):
+    def sell_costs(self, fleet_for_resale: list, op_year: int):
         """
         Returns total recievables from sale of vehicles
         Args:
@@ -163,8 +167,9 @@ class formulas:
             total_recievables += recievables
         return recievables
     
-    def total_fleet_cost_for_current_op_year(self, vehicle_details:list, units_purchased: list, current_fleet_details: list, fleet_for_resale: list,op_year: int):
+    def total_fleet_cost(self, vehicle_details:list, units_purchased: list, current_fleet_details: list, fleet_for_resale: list,op_year: int):
         """
+        RETURN A DICTIONARY RETURNING ALL DETAILS
         Returns total cost of operating the fleet
         Args:
             vehicle_details (list): list of details of vehicles
