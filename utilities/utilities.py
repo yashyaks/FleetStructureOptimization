@@ -7,10 +7,6 @@ class Utilities:
     def cost_profiles(self, year_of_purchase: int, op_year: int):
         """
         Returns cost profile (resale, insurance, maintenance) for the age of the vehicle
-        Args:
-            op_year (int): operating year
-        Returns:
-            cost_profile (list): list of cost profile information
         """
         connection = MySQLOperations().create_connection('fleet-data')
         end_of_year = op_year - year_of_purchase
@@ -34,7 +30,6 @@ class Utilities:
     
     def vehicle_fuel_consumption(self, current_vehicle_details: tuple):
         """
-        MOVE TO A UTILITY CLASS
         Extracts consumption_unitfuel_per_km from vehicles_fuels
         """
         connection = MySQLOperations().create_connection('fleet-data')
