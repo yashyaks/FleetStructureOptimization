@@ -11,7 +11,6 @@ class Costs:
         """
         Returns the cost of buying vehicles in a given year
         """
-        purchase_summary = {}
         vehciles_to_buy = fleet_details[fleet_details['Type'] == 'Buy']
         
         my_sql_operations = MySQLOperations() 
@@ -96,28 +95,38 @@ class Costs:
         
         return yearly_maintainance_cost_dict
           
-    def yearly_fuel_cost(self, current_fleet_details: list, op_year: int):
+    def yearly_fuel_cost(self, fleet_details: pd.DataFrame, op_year: int):
         """
         Returns yearly fuel cost
-        Args:
-            current_fleet_details (list): list of details of vehicles
-                (ID, vehicle, size_bucket, year_of_purchase, cost, yearly_range, distance_bucket, number_of_vehicles, distance_per_vehicle, fuel, cosumption_unitfuel_per_km)
-            op_year (int): operating year
-        Returns:
-            yearly_fuel_cost (int): yearly fuel cost
-        """
-        """
-        handle this constraint: Distance_per_vehicle(km) Should > 0 and <= Yearly range of that model.
         """
         yearly_fuel_cost = 0
-        for i in range(len(current_fleet_details)):
-            current_vehicle_details = current_fleet_details[i]
-            total_yearly_vehicle_fuel_cost = 0
-            fuel_profile = self.fuel_profile(current_vehicle_details, op_year)
-            total_yearly_vehicle_fuel_cost = current_vehicle_details[8]*current_vehicle_details[10]*fuel_profile[3]*current_vehicle_details[7]
-            yearly_fuel_cost += total_yearly_vehicle_fuel_cost
-            
-            return yearly_fuel_cost
+        my_sql_operations = MySQLOperations() 
+        
+        query = f"""SELECT fuel, cost_per_unit_fuel FROM fuels WHERE year = {op_year}"""
+        fuel_cost_data, columns = my_sql_operations.fetch_data(query) 
+        fuel_cost_df = pd.DataFrame(fuel_cost_data, columns=columns)
+        
+        query = f"""SELECT * FROM vehicles_fuels"""
+        fuel_consumption_data, columns = my_sql_operations.fetch_data(query)
+        fuel_consumption_df = pd.DataFrame(fuel_consumption_data, columns=columns)
+        
+        merged_df = pd.merge(
+            pd.merge(fleet_details, fuel_cost_df, left_on='Fuel', right_on='fuel', how='left'),
+            fuel_consumption_df, left_on=['ID', 'Fuel'], right_on=['id', 'fuel'], how='left'
+        )
+        
+        merged_df['fuel_costs'] = (
+            merged_df['Distance_per_vehicle(km)'] * 
+            merged_df['Num_Vehicles'] * 
+            merged_df['consumption_unitfuel_per_km'] *
+            merged_df['cost_per_unit_fuel']
+        )
+        yearly_fuel_cost = merged_df['fuel_costs'].sum()
+        
+        yearly_fuel_cost_dict = merged_df.set_index('ID')['fuel_costs'].to_dict()
+        yearly_fuel_cost_dict['TOTAL'] = float(yearly_fuel_cost)
+        print(merged_df)
+        return yearly_fuel_cost_dict
         
     def sell_costs(self, fleet_for_resale: list, op_year: int):
         """

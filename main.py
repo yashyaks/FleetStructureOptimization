@@ -25,9 +25,11 @@ def main(path):
     # yearly_insurance_cost_dict = costs.yearly_insurance_cost(df)
     # pprint.pprint(yearly_insurance_cost_dict)
     
-    yearly_maintenance_cost_dict = costs.yearly_maintenance_cost(df)
-    pprint.pprint(yearly_maintenance_cost_dict)
+    # yearly_maintenance_cost_dict = costs.yearly_maintenance_cost(df)
+    # pprint.pprint(yearly_maintenance_cost_dict)
     
+    yearly_fuel_cost_dict = costs.yearly_fuel_cost(df, op_year)
+    pprint.pprint(yearly_fuel_cost_dict)
     
 if __name__ == "__main__":
     path = 'sample_opyear_2025.csv'
