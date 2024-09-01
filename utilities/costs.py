@@ -127,10 +127,10 @@ class Costs:
         
         yearly_fuel_cost_dict = merged_df.set_index('ID')['fuel_costs'].to_dict()
         yearly_fuel_cost_dict['TOTAL'] = float(yearly_fuel_cost)
-        print(merged_df)
+        
         return yearly_fuel_cost_dict
         
-    def recievables_from_resale(self, fleet_details: list, op_year: int):
+    def recievables_from_resale(self, fleet_details: pd.DataFrame, op_year: int):
         """
         Returns total recievables from resale of vehicles
         """
@@ -164,21 +164,26 @@ class Costs:
         
         return resale_summary
         
-    def total_fleet_cost(self, vehicle_details:list, units_purchased: list, current_fleet_details: list, fleet_for_resale: list,op_year: int):
+    def total_fleet_cost(self, fleet_Details:pd.DataFrame,op_year: int):
         """
-        RETURN A DICTIONARY RETURNING ALL DETAILS
-        Returns total cost of operating the fleet
-        Args:
-            vehicle_details (list): list of details of vehicles
-            units_purchased (list): list containing the IDs and the number of units purchased
-            current_fleet_details (list): list of details of vehicles
-            fleet_for_resale (list): list of details of vehicles
+        Returns a Dictionary of all details
         """
-        total_cost = 0
-        purchase_summary = self.cost_of_buying_vehicles_in_year(vehicle_details, units_purchased)
-        total_cost += purchase_summary['total']
-        total_cost += self.yearly_fuel_cost(current_fleet_details, op_year)
-        total_cost += self.yearly_maintenance_cost(current_fleet_details, op_year)
-        total_cost += self.yearly_insurance_cost(current_fleet_details, op_year)
-        total_cost -= self.recievables_from_sale_of_vehicle(fleet_for_resale, op_year)
-        return total_cost
+        net_expenditure = 0
+        total_fleet_summary = {}
+        purchase_summary = self.buy_costs(fleet_Details, op_year)
+        yearly_insurance_cost_dict = self.yearly_insurance_cost(fleet_Details)
+        yearly_maintenance_cost_dict = self.yearly_maintenance_cost(fleet_Details)
+        yearly_fuel_cost_dict = self.yearly_fuel_cost(fleet_Details, op_year)
+        resale_summary = self.recievables_from_resale(fleet_Details, op_year)
+        
+        total_fleet_summary['Purchase'] = purchase_summary['TOTAL']
+        total_fleet_summary['Insurance'] = yearly_insurance_cost_dict['TOTAL']
+        total_fleet_summary['Maintenance'] = yearly_maintenance_cost_dict['TOTAL']
+        total_fleet_summary['Fuel'] = yearly_fuel_cost_dict['TOTAL']
+        total_fleet_summary['Resale'] = resale_summary['TOTAL']
+        
+        net_expenditure = total_fleet_summary['Purchase'] + total_fleet_summary['Insurance'] + total_fleet_summary['Maintenance'] + total_fleet_summary['Fuel'] - total_fleet_summary['Resale']
+        
+        total_fleet_summary['Net'] = net_expenditure
+        
+        return total_fleet_summary

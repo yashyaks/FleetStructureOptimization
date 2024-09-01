@@ -19,20 +19,23 @@ def main(path):
     ### Costs Calculations ###
     costs = Costs()
     
-    # purchase_summary = costs.buy_costs(df, op_year)
-    # pprint.pprint(purchase_summary)
+    # # purchase_summary = costs.buy_costs(df, op_year)
+    # # pprint.pprint(purchase_summary)
     
-    # yearly_insurance_cost_dict = costs.yearly_insurance_cost(df)
-    # pprint.pprint(yearly_insurance_cost_dict)
+    # # yearly_insurance_cost_dict = costs.yearly_insurance_cost(df)
+    # # pprint.pprint(yearly_insurance_cost_dict)
     
-    # yearly_maintenance_cost_dict = costs.yearly_maintenance_cost(df)
-    # pprint.pprint(yearly_maintenance_cost_dict)
+    # # yearly_maintenance_cost_dict = costs.yearly_maintenance_cost(df)
+    # # pprint.pprint(yearly_maintenance_cost_dict)
     
-    # yearly_fuel_cost_dict = costs.yearly_fuel_cost(df, op_year)
-    # pprint.pprint(yearly_fuel_cost_dict)
+    # # yearly_fuel_cost_dict = costs.yearly_fuel_cost(df, op_year)
+    # # pprint.pprint(yearly_fuel_cost_dict)
     
-    resale_summary = costs.recievables_from_resale(df, op_year)
-    pprint.pprint(resale_summary)
+    # resale_summary = costs.recievables_from_resale(df, op_year)
+    # pprint.pprint(resale_summary)
+    
+    total_fleet_summary = costs.total_fleet_cost(df, op_year)
+    pprint.pprint(total_fleet_summary)
     
 if __name__ == "__main__":
     path = 'sample_opyear_2025.csv'
