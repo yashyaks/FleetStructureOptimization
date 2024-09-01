@@ -90,7 +90,7 @@ class Costs:
             ((merged_df['maintenance_cost_percent']/100) * merged_df['cost']) * merged_df['Num_Vehicles'] 
         )
         total_fleet_maintainance_cost = merged_df['maintenance_cost'].sum()
-        print(merged_df)
+
         yearly_maintainance_cost_dict = merged_df.set_index('ID')['maintenance_cost'].to_dict()
         yearly_maintainance_cost_dict['TOTAL'] = float(total_fleet_maintainance_cost)
         
