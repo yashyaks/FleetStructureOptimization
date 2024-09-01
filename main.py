@@ -18,8 +18,13 @@ def main(path):
         
     ### Costs Calculations ###
     costs = Costs()
-    purchase_summary = costs.buy_costs(df, op_year)
-    pprint.pprint(purchase_summary)
+    
+    # purchase_summary = costs.buy_costs(df, op_year)
+    # pprint.pprint(purchase_summary)
+    
+    yearly_insurance_cost_dict = costs.yearly_insurance_cost(df, op_year)
+    pprint.pprint(yearly_insurance_cost_dict)
+    
     
 if __name__ == "__main__":
     path = 'sample_opyear_2025.csv'

@@ -48,24 +48,39 @@ class Costs:
         cost_profile = cursor.fetchall()
         return cost_profile[0]
     
-    def yearly_insurance_cost(self, current_fleet_details: list, op_year: int):
+    def yearly_insurance_cost(self, fleet_details: pd.DataFrame, op_year: int):
         """
         Returns Insurance cost for the operating year
-        Args:
-            current_fleet_details (list): list of details of vehicles
-                (ID, vehicle, size_bucket, year_of_purchase, cost, yearly_range, distance_bucket, number_of_vehicles, distance_per_vehicle, fuel, cosumption_unitfuel_per_km)
-            op_year (int): operating year
-        Returns:
-            yearly_insurance_cost (int): yearly insurance cost
         """
         total_fleet_insurance_cost = 0
-        for i in range(len(current_fleet_details)):
-            cost_profile = self.cost_profiles(current_fleet_details[i][3], op_year)
-            insurance_percent = cost_profile[2]
-            print('insurance_details: ', current_fleet_details[i], insurance_percent )
-            insurance_cost = current_fleet_details[i][4]*insurance_percent*current_fleet_details[i][7]
-            total_fleet_insurance_cost += insurance_cost
-        return total_fleet_insurance_cost
+        my_sql_operations = MySQLOperations() 
+        
+        query = f"""SELECT id, year, cost FROM vehicles"""
+        purchase_year_data, columns = my_sql_operations.fetch_data(query) 
+        purchase_year_df = pd.DataFrame(purchase_year_data, columns=columns)
+        
+        query = f"""SELECT end_of_year, insurance_cost_percent FROM cost_profiles"""
+        insurance_cost_data, columns = my_sql_operations.fetch_data(query)
+        insurance_cost_df = pd.DataFrame(insurance_cost_data, columns=columns)
+        
+        eoy_df = pd.merge(fleet_details, purchase_year_df, left_on=['ID'], right_on=['id'], how='left')
+                
+        eoy_df['End_of_year'] = (
+            eoy_df['Operating Year'] - eoy_df['year'] + 1
+        )
+        
+        merged_df = pd.merge(eoy_df, insurance_cost_df, left_on='End_of_year', right_on='end_of_year', how='left')
+        
+        merged_df['insurance_cost'] = (
+            ((merged_df['insurance_cost_percent']/100) * merged_df['cost']) * merged_df['Num_Vehicles'] 
+        )
+        total_fleet_insurance_cost = merged_df['insurance_cost'].sum()
+        
+        yearly_insurance_cost_dict = merged_df.set_index('ID')['insurance_cost'].to_dict()
+        yearly_insurance_cost_dict['TOTAL'] = float(total_fleet_insurance_cost)
+        
+        return yearly_insurance_cost_dict
+        
     
     def yearly_maintenance_cost(self, current_fleet_details: list, op_year: int):
         """
