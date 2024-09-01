@@ -17,7 +17,9 @@ class Costs:
         query = f"""SELECT id, cost FROM vehicles WHERE year = {op_year}"""
         vehicle_costs, columns = my_sql_operations.fetch_data(query) 
         vehicle_costs_df = pd.DataFrame(vehicle_costs, columns=columns)
+        
         merged_df = pd.merge(vehciles_to_buy, vehicle_costs_df, left_on='ID', right_on='id', how='left')
+        
         merged_df['line_item_cost'] = (
             merged_df['cost'] * 
             merged_df['Num_Vehicles']
@@ -128,25 +130,40 @@ class Costs:
         print(merged_df)
         return yearly_fuel_cost_dict
         
-    def sell_costs(self, fleet_for_resale: list, op_year: int):
+    def recievables_from_resale(self, fleet_details: list, op_year: int):
         """
-        Returns total recievables from sale of vehicles
-        Args:
-            fleet_for_resale (list): list of details of vehicles
-            (ID, vehicle, year_of_purchase, cost, number_of_vehicles)
-            op_year (int): operating year
-        Returns:
-            recievables (int): total recievables from sale of vehicles
+        Returns total recievables from resale of vehicles
         """
-        total_recievables = 0
-        for i in range(len(fleet_for_resale)):
-            recievables = 0
-            current_vehicle_details = fleet_for_resale[i]
-            cost_profile = self.cost_profiles(current_vehicle_details[2], op_year)
-            recievables = current_vehicle_details[3]*(cost_profile[1]/100)*current_vehicle_details[4]
-            total_recievables += recievables
-        return recievables
-    
+        vehicles_to_buy = fleet_details[fleet_details['Type'] == 'Sell']
+        
+        my_sql_operations = MySQLOperations() 
+        query = f"""SELECT id, year, cost FROM vehicles WHERE year <= {op_year}"""
+        vehicle_costs, columns = my_sql_operations.fetch_data(query) 
+        vehicle_costs_df = pd.DataFrame(vehicle_costs, columns=columns)
+        
+        query = f"""SELECT end_of_year, resale_value_percent FROM cost_profiles"""
+        resale_value_data, columns = my_sql_operations.fetch_data(query)
+        resale_value_df = pd.DataFrame(resale_value_data, columns=columns)
+
+        eoy_df = pd.merge(vehicles_to_buy, vehicle_costs_df, left_on='ID', right_on='id', how='left')
+                
+        eoy_df['End_of_year'] = (
+            eoy_df['Operating Year'] - eoy_df['year'] + 1
+        )
+        
+        merged_df = pd.merge(eoy_df, resale_value_df, left_on='End_of_year', right_on='end_of_year', how='left')
+        
+        merged_df['line_item_value'] = (
+            ((merged_df['resale_value_percent']/100) * merged_df['cost']) * merged_df['Num_Vehicles']
+        )
+        
+        total_value = merged_df['line_item_value'].sum()
+        
+        resale_summary = merged_df.set_index('ID')['line_item_value'].to_dict()
+        resale_summary['TOTAL'] = float(total_value)
+        
+        return resale_summary
+        
     def total_fleet_cost(self, vehicle_details:list, units_purchased: list, current_fleet_details: list, fleet_for_resale: list,op_year: int):
         """
         RETURN A DICTIONARY RETURNING ALL DETAILS

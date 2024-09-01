@@ -28,8 +28,11 @@ def main(path):
     # yearly_maintenance_cost_dict = costs.yearly_maintenance_cost(df)
     # pprint.pprint(yearly_maintenance_cost_dict)
     
-    yearly_fuel_cost_dict = costs.yearly_fuel_cost(df, op_year)
-    pprint.pprint(yearly_fuel_cost_dict)
+    # yearly_fuel_cost_dict = costs.yearly_fuel_cost(df, op_year)
+    # pprint.pprint(yearly_fuel_cost_dict)
+    
+    resale_summary = costs.recievables_from_resale(df, op_year)
+    pprint.pprint(resale_summary)
     
 if __name__ == "__main__":
     path = 'sample_opyear_2025.csv'
