@@ -29,25 +29,7 @@ class Costs:
         purchase_summary['TOTAL'] = float(total_cost)
         
         return purchase_summary
-
-    def cost_profiles(self, year_of_purchase: int, op_year: int):
-        """
-        MOVE TO A UTILITY CLASS
-        Returns cost profile (resale, insurance, maintenance) for the age of the vehicle
-        Args:
-            op_year (int): operating year
-        Returns:
-            cost_profile (list): list of cost profile information
-        """
-        connection = MySQLOperations().create_connection('fleet-data')
-        end_of_year = op_year - year_of_purchase
-        cursor = connection.cursor()
-        query = f"""SELECT * FROM cost_profiles WHERE end_of_year = {end_of_year}"""
-        print('\nquery run on fucntion call cost_profiles: ', query)
-        cursor.execute(query)
-        cost_profile = cursor.fetchall()
-        return cost_profile[0]
-    
+ 
     def yearly_insurance_cost(self, fleet_details: pd.DataFrame, op_year: int):
         """
         Returns Insurance cost for the operating year
@@ -80,8 +62,7 @@ class Costs:
         yearly_insurance_cost_dict['TOTAL'] = float(total_fleet_insurance_cost)
         
         return yearly_insurance_cost_dict
-        
-    
+            
     def yearly_maintenance_cost(self, current_fleet_details: list, op_year: int):
         """
         Returns Maintenance cost for the operating year
@@ -100,31 +81,7 @@ class Costs:
             maintenance_cost = current_fleet_details[i][4]*maintenance_percent*current_fleet_details[i][7]
             total_fleet_maintenance_cost += maintenance_cost
         return total_fleet_maintenance_cost
-            
-    def fuel_profile(self, current_vehicle_details: tuple, op_year: int):
-        """
-        MOVE TO A UTILITY CLASS
-        Extracts fuel profile for the vehicle
-        """
-        connection = MySQLOperations().create_connection('fleet-data')
-        cursor = connection.cursor()
-        query = f""" SELECT * FROM fuels WHERE YEAR = {op_year} AND FUEL = '{current_vehicle_details.iloc[4]}' """
-        cursor.execute(query)
-        fuel_profile = cursor.fetchall()
-        return fuel_profile[0]
-    
-    def vehicle_fuel_consumption(self, current_vehicle_details: tuple):
-        """
-        MOVE TO A UTILITY CLASS
-        Extracts consumption_unitfuel_per_km from vehicles_fuels
-        """
-        connection = MySQLOperations().create_connection('fleet-data')
-        cursor = connection.cursor()
-        query = f""" SELECT * FROM vehicles_fuels WHERE ID = '{current_vehicle_details.iloc[1]}' """
-        cursor.execute(query)
-        fuel_consumption_profile = cursor.fetchall()
-        return fuel_consumption_profile[0]
-        
+          
     def yearly_fuel_cost(self, current_fleet_details: list, op_year: int):
         """
         Returns yearly fuel cost
