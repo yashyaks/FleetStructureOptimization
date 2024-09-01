@@ -30,7 +30,7 @@ class Costs:
         
         return purchase_summary
  
-    def yearly_insurance_cost(self, fleet_details: pd.DataFrame, op_year: int):
+    def yearly_insurance_cost(self, fleet_details: pd.DataFrame):
         """
         Returns Insurance cost for the operating year
         """
@@ -63,24 +63,38 @@ class Costs:
         
         return yearly_insurance_cost_dict
             
-    def yearly_maintenance_cost(self, current_fleet_details: list, op_year: int):
+    def yearly_maintenance_cost(self, fleet_details: pd.DataFrame):
         """
         Returns Maintenance cost for the operating year
-        Args:
-            current_fleet_details (list): list of details of vehicles
-                (ID, vehicle, size_bucket, year_of_purchase, cost, yearly_range, distance_bucket, number_of_vehicles, distance_per_vehicle, fuel, cosumption_unitfuel_per_km)
-            op_year (int): operating year
-        Returns:
-            yearly_maintenance_cost (int): yearly maintenance cost
         """
-        total_fleet_maintenance_cost = 0
-        for i in range(len(current_fleet_details)):
-            cost_profile = self.cost_profiles(current_fleet_details[i][3], op_year)
-            maintenance_percent = cost_profile[3]
-            print('maintenance_details: ', current_fleet_details[i], maintenance_percent )
-            maintenance_cost = current_fleet_details[i][4]*maintenance_percent*current_fleet_details[i][7]
-            total_fleet_maintenance_cost += maintenance_cost
-        return total_fleet_maintenance_cost
+        total_fleet_maintainance_cost = 0
+        my_sql_operations = MySQLOperations() 
+        
+        query = f"""SELECT id, year, cost FROM vehicles"""
+        purchase_year_data, columns = my_sql_operations.fetch_data(query) 
+        purchase_year_df = pd.DataFrame(purchase_year_data, columns=columns)
+        
+        query = f"""SELECT end_of_year, maintenance_cost_percent FROM cost_profiles"""
+        maintenance_cost_data, columns = my_sql_operations.fetch_data(query)
+        maintenance_cost_df = pd.DataFrame(maintenance_cost_data, columns=columns)
+        
+        eoy_df = pd.merge(fleet_details, purchase_year_df, left_on=['ID'], right_on=['id'], how='left')
+                
+        eoy_df['End_of_year'] = (
+            eoy_df['Operating Year'] - eoy_df['year'] + 1
+        )
+        
+        merged_df = pd.merge(eoy_df, maintenance_cost_df, left_on='End_of_year', right_on='end_of_year', how='left')
+        
+        merged_df['maintenance_cost'] = (
+            ((merged_df['maintenance_cost_percent']/100) * merged_df['cost']) * merged_df['Num_Vehicles'] 
+        )
+        total_fleet_maintainance_cost = merged_df['maintenance_cost'].sum()
+        print(merged_df)
+        yearly_maintainance_cost_dict = merged_df.set_index('ID')['maintenance_cost'].to_dict()
+        yearly_maintainance_cost_dict['TOTAL'] = float(total_fleet_maintainance_cost)
+        
+        return yearly_maintainance_cost_dict
           
     def yearly_fuel_cost(self, current_fleet_details: list, op_year: int):
         """
