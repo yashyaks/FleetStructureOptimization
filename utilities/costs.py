@@ -1,8 +1,6 @@
 from utilities.my_sql_operations import MySQLOperations
 import pandas as pd
-"""
-ALL INPUT NEEDS TO COME FROM CSV
-"""
+
 class Costs:
     def __init__(self):
         pass
