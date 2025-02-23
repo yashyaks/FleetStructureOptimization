@@ -1,17 +1,1 @@
-Size_Bucket,Distance_Bucket,IDs
-S1,D1,
-S1,D2,
-S1,D3,
-S1,D4,
-S2,D1,
-S2,D2,
-S2,D3,
-S2,D4,
-S4,D1,
-S4,D2,
-S4,D3,
-S4,D4,
-S3,D1,
-S3,D2,
-S3,D3,
-S3,D4,
+Operating Year,Size,Distance_demand,Demand (km),ID,Vehicle,Available Year,Cost ($),Yearly range (km),Distance_vehicle,Fuel,carbon_emissions_per_km,insurance_cost,maintenance_cost,fuel_costs_per_km,Topsis_Score,Rank
