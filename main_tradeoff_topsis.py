@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 import os
 
 def main():
-    
     va = VehicleAllocation()
     tp = Topsis()
     ev = Evaluation()
@@ -16,8 +15,10 @@ def main():
     for year in range(2023, 2039):
         print(f"Starting process for year {year}")
         df = va.allocate_vehicles(year)
+        df.to_csv(f'data/output/tradeoff/topsis/allocation_output_{year}.csv', index=False)
         print(f"Allocated vehicles for year {year}")
         tp_df = tp.apply_topsis(year, df)
+        tp_df.to_csv(f'data/output/tradeoff/topsis/topsis_output_{year}.csv', index=False)
         print(f"TOPSIS calculation done for year {year}")
         
         column_mapping = {
@@ -42,13 +43,14 @@ def main():
         print(f"Multiobjective Optimization...")
         mo = MultiObjectiveFleetOptimizer(tp_df)
         df = mo.get_optimized_results(year)
+        df.to_csv(f'data/output/tradeoff/topsis/multi_objective_fleet_allocation_{year}.csv', index=False)
         print("Optimization done, output saved to file; evaluating output")
         df = ev.apply_metrics_to_dataframe(df)
-        df.to_csv(f'data/output/tradeoff/notopsis/multi_objective_fleet_allocation_eval_{year}.csv', index=False)
+        df.to_csv(f'data/output/tradeoff/topsis/multi_objective_fleet_allocation_eval_{year}.csv', index=False)
         print(f"Optimization and Evaluation done for year {year}")
         print(f"Generating summary for year {year}")
         summary_df = summarizer.summarize(df, year)
-        summary_df.to_csv('data/output/tradeoff/notopsis/multiobjective_summary.csv')
+        summary_df.to_csv('data/output/tradeoff/topsis/multiobjective_summary.csv')
         print("Summary generated")
         
         print()

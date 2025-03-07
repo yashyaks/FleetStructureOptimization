@@ -78,7 +78,7 @@ class Topsis:
 
         # Combine all results
         final_results = pd.concat(results)
-        final_results.to_csv(f'data/output/topsis_output_{year}.csv', index=False)
+        
 
         return final_results
     

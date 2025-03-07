@@ -405,5 +405,4 @@ class MultiObjectiveFleetOptimizer:
         # f_df.to_csv(f"fitness_scores_{year}.csv", index=False)
 
         df = pd.DataFrame(results)
-        df.to_csv(f'data/output/tradeoff/topsis/multi_objective_fleet_allocation_{year}.csv', index=False)
         return df
