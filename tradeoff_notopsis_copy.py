@@ -51,6 +51,8 @@ class MultiObjectiveFleetOptimizer:
         
         return max_vehicles
 
+
+
     def is_valid_solution(self, solution: Dict, size_distance: Tuple) -> bool:
         if sum(solution.values()) == 0:
             return False
@@ -79,10 +81,6 @@ class MultiObjectiveFleetOptimizer:
         vehicles = self.vehicles_by_size_distance[size_distance]
         max_vehicles = self.max_vehicles_by_group[size_distance]
         
-        topsis_scores = [v['topsis_score'] for v in vehicles]
-        total_topsis = sum(topsis_scores)
-        normalized_topsis = [score/total_topsis for score in topsis_scores] if total_topsis > 0 else [1/len(topsis_scores)] * len(topsis_scores)
-        
         vehicle_types = [v['vehicle_type'] for v in vehicles]
         
         while len(population) < population_size:
@@ -91,7 +89,7 @@ class MultiObjectiveFleetOptimizer:
             remaining_vehicles = max_vehicles
             
             while remaining_vehicles > 0:
-                selected_idx = np.random.choice(range(len(vehicle_types)), p=normalized_topsis)
+                selected_idx = np.random.choice(range(len(vehicle_types)))
                 selected_type = vehicle_types[selected_idx]
                 
                 if solution[selected_type] < remaining_vehicles and random.random() < 0.7:
@@ -167,7 +165,6 @@ class MultiObjectiveFleetOptimizer:
         total_cost = 0
         total_emissions = 0
         total_capacity = 0
-        weighted_topsis = 0
         
         for vehicle_type, num_vehicles in solution.items():
             if num_vehicles > 0:
@@ -175,7 +172,6 @@ class MultiObjectiveFleetOptimizer:
                 total_cost += self.calculate_total_cost(num_vehicles, vehicle)
                 total_emissions += self.calculate_total_emissions(num_vehicles, vehicle)
                 total_capacity += num_vehicles * vehicle['yearly_range']
-                weighted_topsis += num_vehicles * vehicle['topsis_score']
         
         demand_penalty = max(0, demand - total_capacity) * 1000
         if demand_penalty > 0:  # Solution doesn't meet demand
@@ -191,8 +187,7 @@ class MultiObjectiveFleetOptimizer:
         
         multi_objective_score = (
             self.cost_weight * normalized_cost + 
-            self.emission_weight * normalized_emissions +
-            0.9 * (weighted_topsis / sum(solution.values()) if sum(solution.values()) > 0 else 0)
+            self.emission_weight * normalized_emissions
         )
         
         return multi_objective_score
@@ -405,5 +400,5 @@ class MultiObjectiveFleetOptimizer:
         # f_df.to_csv(f"fitness_scores_{year}.csv", index=False)
 
         df = pd.DataFrame(results)
-        df.to_csv(f'data/output/tradeoff/topsis/multi_objective_fleet_allocation_{year}.csv', index=False)
+        df.to_csv(f'data/output/tradeoff/notopsis/multi_objective_fleet_allocation_{year}.csv', index=False)
         return df
