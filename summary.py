@@ -8,7 +8,7 @@ class Summary:
         return df['Cost ($)'].sum()
         
     def yearly_carbon_emissions_total(self, df):
-        return (df['No_of_vehicles'] * df['carbon_emissions_per_km'] * (df['DemandFulfillment'] * df['Demand'])).sum()
+        return (df['No_of_vehicles'] * df['carbon_emissions_per_km'] * (df['DemandFulfillment'] * df['Demand (km)'])).sum()
     
     def summarize(self, df, year):
         """Summarize yearly metrics and store in summary DataFrame"""

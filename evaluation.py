@@ -4,13 +4,13 @@ class Evaluation:
         pass
 
     def calculate_utilization(self, df):
-        combinations = df.groupby(['Size', 'Distance'])
+        combinations = df.groupby(['Size', 'Distance_demand'])
         scores = []
 
         for (size, distance), group in combinations:
             total_vehicles = group['No_of_vehicles'].sum()
             for _, row in group.iterrows():
-                score = (row['Demand'] / total_vehicles) / row['Yearly Range'] * 100
+                score = (row['Demand (km)'] / total_vehicles) / row['Yearly range (km)'] * 100
                 scores.append(score)
 
         df['Utilization (%)'] = scores

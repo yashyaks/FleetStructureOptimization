@@ -3,6 +3,7 @@ import numpy as np
 import math
 import random 
 from typing import List, Dict, Tuple
+from pprint import pprint
 
 class MultiObjectiveFleetOptimizer:
     def __init__(self, data: pd.DataFrame, emission_weight: float = 0.5, cost_weight: float = 0.5):
@@ -24,18 +25,25 @@ class MultiObjectiveFleetOptimizer:
                 groups[key] = []
             groups[key].append({
                 'Allocation' : row['Allocation'],
+                'Operating Year': row['Operating Year'],
                 'Size': row['Size'],
                 'Distance_demand': row['Distance_demand'],
+                'demand': row['Demand (km)'],
+                'ID': row['ID'],
                 'vehicle_type': row['Vehicle'],
-                'yearly_range': row['Yearly_Range'],
-                'topsis_score': row['Topsis_Score'],
-                'insurance_cost': row['Insurance_Cost'],
-                'maintenance_cost': row['Maintenance_Cost'],
-                'cost': row['Cost'],
-                'fuel_costs_per_km': row['Fuel_Costs'],
-                'fuel': row['Fuel'],
-                'demand': row['Demand'],
-                'carbon_emissions_per_km': row['carbon_emissions_per_km']  # Carbon emission per km
+                'Available Year': row ['Available Year'],
+                'Cost ($)': row['Cost ($)'],
+                'Yearly range (km)': row['Yearly range (km)'],
+                'Distance_vehicle': row['Distance_vehicle'],
+                'Fuel': row['Fuel'],
+                'Consumption (unit_fuel/km)': row['Consumption (unit_fuel/km)'],
+                'carbon_emissions_per_km': row['carbon_emissions_per_km'],
+                'insurance_cost': row['insurance_cost'],
+                'maintenance_cost': row['maintenance_cost'],
+                'fuel_costs_per_km': row['fuel_costs_per_km'],
+                'Total_Cost': row['Total_Cost'],
+                'Topsis_Score': row['Topsis_Score'],
+                'Rank': row['Rank']
             })
         return groups
     
@@ -45,7 +53,7 @@ class MultiObjectiveFleetOptimizer:
 
             demand = vehicles[0]['demand']
             
-            max_yearly_range = max(v['yearly_range'] for v in vehicles)
+            max_yearly_range = max(v['Yearly range (km)'] for v in vehicles)
             
             max_vehicles[key] = math.ceil(demand / max_yearly_range)
         
@@ -62,7 +70,7 @@ class MultiObjectiveFleetOptimizer:
         return num_vehicles * (
             vehicle['insurance_cost'] + 
             vehicle['maintenance_cost'] + 
-            vehicle['cost']
+            vehicle['Cost ($)']
         ) + vehicle['fuel_costs_per_km'] * (vehicle['demand'] / num_vehicles)
 
     def calculate_total_emissions(self, num_vehicles: int, vehicle: Dict) -> float:
@@ -79,12 +87,12 @@ class MultiObjectiveFleetOptimizer:
         vehicles = self.vehicles_by_size_distance[size_distance]
         max_vehicles = self.max_vehicles_by_group[size_distance]
         
-        topsis_scores = [v['topsis_score'] for v in vehicles]
+        topsis_scores = [v['Rank'] for v in vehicles]
         total_topsis = sum(topsis_scores)
         normalized_topsis = [score/total_topsis for score in topsis_scores] if total_topsis > 0 else [1/len(topsis_scores)] * len(topsis_scores)
-        
+        # prob = [(1 - x)/10 for x in normalized_topsis]
         vehicle_types = [v['vehicle_type'] for v in vehicles]
-        
+        # pprint(normalized_topsis)
         while len(population) < population_size:
 
             solution = {v_type: 0 for v_type in vehicle_types}
@@ -174,8 +182,8 @@ class MultiObjectiveFleetOptimizer:
                 vehicle = vehicle_dict[vehicle_type]
                 total_cost += self.calculate_total_cost(num_vehicles, vehicle)
                 total_emissions += self.calculate_total_emissions(num_vehicles, vehicle)
-                total_capacity += num_vehicles * vehicle['yearly_range']
-                weighted_topsis += num_vehicles * vehicle['topsis_score']
+                total_capacity += num_vehicles * vehicle['Yearly range (km)']
+                weighted_topsis += num_vehicles * vehicle['Rank']
         
         demand_penalty = max(0, demand - total_capacity) * 1000
         if demand_penalty > 0:  # Solution doesn't meet demand
@@ -192,7 +200,7 @@ class MultiObjectiveFleetOptimizer:
         multi_objective_score = (
             self.cost_weight * normalized_cost + 
             self.emission_weight * normalized_emissions +
-            0.9 * (weighted_topsis / sum(solution.values()) if sum(solution.values()) > 0 else 0)
+            0.1 * (weighted_topsis / sum(solution.values()) if sum(solution.values()) > 0 else 0)
         )
         
         return multi_objective_score
@@ -219,7 +227,7 @@ class MultiObjectiveFleetOptimizer:
                     vehicle = vehicle_dict[vehicle_type]
                     total_cost += self.calculate_total_cost(num_vehicles, vehicle)
                     total_emissions += self.calculate_total_emissions(num_vehicles, vehicle)
-                    total_capacity += num_vehicles * vehicle['yearly_range']
+                    total_capacity += num_vehicles * vehicle['Yearly range (km)']
             
             demand = vehicles[0]['demand']
             if total_capacity < demand:
@@ -372,30 +380,38 @@ class MultiObjectiveFleetOptimizer:
             
             if best_solution is None:
                 continue
-                
+            pprint(best_solution)
             for vehicle_type, num_vehicles in best_solution.items():
                 if num_vehicles > 0:
-                    vehicle_data = next(v for v in self.vehicles_by_size_distance[size_distance] 
-                                     if v['vehicle_type'] == vehicle_type)
+                    vehicle_data = next(v for v in self.vehicles_by_size_distance[size_distance] if v['vehicle_type'] == vehicle_type)
                     total_cost = self.calculate_total_cost(num_vehicles, vehicle_data)
                     total_emissions = self.calculate_total_emissions(num_vehicles, vehicle_data)
-
                     Allocation = vehicle_data.get('Allocation')
                     Size = vehicle_data.get('Size')
                     Distance_demand = vehicle_data.get('Distance_demand')
                     results.append({
                         "Allocation": Allocation,
+                        "Operating Year": vehicle_data["Operating Year"],
                         "Size":Size,
-                        "Distance":Distance_demand,
+                        "Distance_demand":Distance_demand,
+                        "Demand (km)": vehicle_data['demand'],
+                        "ID": vehicle_data['ID'],
                         "Vehicle": vehicle_type,
-                        "Cost ($)": round(total_cost, 2),
-                        # "carbon_emissions_per_km": round(total_emissions, 2),
-                        "carbon_emissions_per_km": vehicle_data["carbon_emissions_per_km"],
-                        "Fuel": vehicle_data['fuel'],
+                        "Available Year":vehicle_data['Available Year'],
+                        "Cost ($)": vehicle_data['Cost ($)'],
+                        "Yearly range (km)": vehicle_data['Yearly range (km)'],
+                        "Distance_vehicle": vehicle_data['Distance_vehicle'],
+                        "Fuel": vehicle_data['Fuel'],
+                        "Consumption (unit_fuel/km)": vehicle_data['Consumption (unit_fuel/km)'],
+                        "carbon_emissions_per_km": vehicle_data['carbon_emissions_per_km'],
+                        "insurance_cost": vehicle_data['insurance_cost'],
+                        "maintenance_cost": vehicle_data['maintenance_cost'],
+                        "fuel_costs_per_km": vehicle_data['fuel_costs_per_km'],
+                        "Total_Cost": vehicle_data['Total_Cost'],
+                        'Topsis_Score': vehicle_data['Topsis_Score'],
+                        'Rank': vehicle_data['Rank'],
                         "No_of_vehicles": num_vehicles,
-                        "Max Vehicles": max_vehicles,
-                        "Demand": vehicle_data['demand'],
-                        "Yearly Range": vehicle_data['yearly_range'],                        
+                        "Max Vehicles": max_vehicles,               
                     })
         
         # f_df = pd.DataFrame({

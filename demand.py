@@ -143,7 +143,7 @@ class VehicleAllocation:
         demand_df['Distance_categorical'] = demand_df['Distance'].map(distance_mapping)
 
         demand_df = demand_df[demand_df['Year'] == year].copy() # Filter relevant year
-        available_vehicles = vehicles_df[(vehicles_df['Year'] <= year) & (vehicles_df['Year'] >= (year - 5))]  # Vehicles available in that year
+        available_vehicles = vehicles_df[vehicles_df['Year'] == year]  # Vehicles available in that year
 
         def find_allocations(row):
             size_needed = row['Size']

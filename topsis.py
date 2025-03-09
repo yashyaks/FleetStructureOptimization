@@ -41,7 +41,7 @@ class Topsis:
         data['Topsis_Score'] = distance_worst / (distance_best + distance_worst)
         
         # Rank the alternatives
-        data['Rank'] = data['Topsis_Score'].rank(method='dense', ascending=False)
+        data['Rank'] = data['Topsis_Score'].rank(method='dense', ascending=True)
         
         return data
     
