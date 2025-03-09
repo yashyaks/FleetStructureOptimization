@@ -57,6 +57,5 @@ def main():
         
         print()
     
-    for year in range()
 if __name__ == "__main__":
     main()
