@@ -75,7 +75,7 @@ class VehicleAllocation:
             query = f"""SELECT end_of_year, maintenance_cost_percent FROM cost_profiles"""
             maintenance_cost_data, columns = my_sql_operations.fetch_data(query)
             maintenance_cost_df = pd.DataFrame(maintenance_cost_data, columns=columns)
-            
+            print(fleet_details.columns)
             eoy_df = pd.merge(fleet_details, purchase_year_df, left_on=['ID'], right_on=['id'], how='left')
                     
             eoy_df['End_of_year'] = (
@@ -171,6 +171,6 @@ class VehicleAllocation:
         df['insurance_cost'] = self.yearly_insurance_cost_per_vehicle(df)
         df['maintenance_cost'] = self.yearly_maintenance_cost_per_vehicle(df)
         df['fuel_costs_per_km'] = self.per_km_fuel_cost_per_vehicle(df, year)
-        df['Operating_Cost'] = df['insurance_cost'] + df['maintenance_cost'] + df['fuel_costs_per_km'] 
+        df['Operating_Cost'] = df['insurance_cost'] + df['maintenance_cost'] + (df['fuel_costs_per_km'] * df['Yearly range (km)'])
         
         return df

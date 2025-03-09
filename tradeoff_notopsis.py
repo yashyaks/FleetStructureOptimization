@@ -42,8 +42,8 @@ class MultiObjectiveFleetOptimizer:
                 'maintenance_cost': row['maintenance_cost'],
                 'fuel_costs_per_km': row['fuel_costs_per_km'],
                 'Operating_Cost': row['Operating_Cost'],
-                'Topsis_Score': row['Topsis_Score'],
-                'Rank': row['Rank']
+                # 'Topsis_Score': row['Topsis_Score'],
+                # 'Rank': row['Rank']
             })
         return groups
     
@@ -87,9 +87,9 @@ class MultiObjectiveFleetOptimizer:
         vehicles = self.vehicles_by_size_distance[size_distance]
         max_vehicles = self.max_vehicles_by_group[size_distance]
         
-        topsis_scores = [v['Rank'] for v in vehicles]
-        total_topsis = sum(topsis_scores)
-        normalized_topsis = [score/total_topsis for score in topsis_scores] if total_topsis > 0 else [1/len(topsis_scores)] * len(topsis_scores)
+        # topsis_scores = [v['Rank'] for v in vehicles]
+        # total_topsis = sum(topsis_scores)
+        # normalized_topsis = [score/total_topsis for score in topsis_scores] if total_topsis > 0 else [1/len(topsis_scores)] * len(topsis_scores)
         # prob = [(1 - x)/10 for x in normalized_topsis]
         vehicle_types = [v['ID'] for v in vehicles]
         # pprint(normalized_topsis)
@@ -99,13 +99,14 @@ class MultiObjectiveFleetOptimizer:
             remaining_vehicles = max_vehicles
             
             while remaining_vehicles > 0:
-                selected_idx = np.random.choice(range(len(vehicle_types)), p=normalized_topsis)
+                selected_idx = np.random.choice(range(len(vehicle_types))
+                                                )
                 selected_type = vehicle_types[selected_idx]
                 
-                if solution[selected_type] < remaining_vehicles and random.random() < 0.7:
+                if solution[selected_type] < remaining_vehicles and random.random() < 0.9:
                     solution[selected_type] += 1
                     remaining_vehicles -= 1
-                elif random.random() < 0.2:
+                elif random.random() < 0.9:
                     break
             
             if self.is_valid_solution(solution, size_distance):
@@ -175,7 +176,7 @@ class MultiObjectiveFleetOptimizer:
         total_cost = 0
         total_emissions = 0
         total_capacity = 0
-        weighted_topsis = 0
+        # weighted_topsis = 0
         
         for vehicle_type, num_vehicles in solution.items():
             if num_vehicles > 0:
@@ -183,7 +184,7 @@ class MultiObjectiveFleetOptimizer:
                 total_cost += self.calculate_total_cost(num_vehicles, vehicle)
                 total_emissions += self.calculate_total_emissions(num_vehicles, vehicle)
                 total_capacity += num_vehicles * vehicle['Yearly range (km)']
-                weighted_topsis += num_vehicles * vehicle['Rank']
+                # weighted_topsis += num_vehicles * vehicle['Rank']
         
         demand_penalty = max(0, demand - total_capacity) * 1000
         if demand_penalty > 0:  # Solution doesn't meet demand
@@ -199,8 +200,8 @@ class MultiObjectiveFleetOptimizer:
         
         multi_objective_score = (
             self.cost_weight * normalized_cost + 
-            self.emission_weight * normalized_emissions +
-            1 * (weighted_topsis / sum(solution.values()) if sum(solution.values()) > 0 else 0)
+            self.emission_weight * normalized_emissions
+            # + 1 * (weighted_topsis / sum(solution.values()) if sum(solution.values()) > 0 else 0)
         )
         
         return multi_objective_score
@@ -408,8 +409,8 @@ class MultiObjectiveFleetOptimizer:
                         "maintenance_cost": vehicle_data['maintenance_cost'],
                         "fuel_costs_per_km": vehicle_data['fuel_costs_per_km'],
                         "Operating_Cost": vehicle_data['Operating_Cost'],
-                        'Topsis_Score': vehicle_data['Topsis_Score'],
-                        'Rank': vehicle_data['Rank'],
+                        # 'Topsis_Score': vehicle_data['Topsis_Score'],
+                        # 'Rank': vehicle_data['Rank'],
                         "No_of_vehicles": num_vehicles,
                         "Max Vehicles": max_vehicles,               
                     })

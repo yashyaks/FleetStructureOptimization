@@ -1,6 +1,6 @@
 from demand import VehicleAllocation
-from topsis import Topsis
-from tradeoff_topsis import MultiObjectiveFleetOptimizer
+# from topsis import Topsis
+from tradeoff_notopsis import MultiObjectiveFleetOptimizer
 from evaluation import Evaluation
 from summary import Summary
 
@@ -10,11 +10,11 @@ import os
 
 def main():
     va = VehicleAllocation()
-    tps = Topsis()
+    # tps = Topsis()
     eval = Evaluation()
     summarizer = Summary()
     sqlops = MySQLOperations()
-    connection_string = os.getenv('OUTPUT_STRING')
+    # connection_string = os.getenv('OUTPUT_STRING')
     
     output_list = []
     for year in range(2023, 2039):
@@ -57,18 +57,18 @@ def main():
             
             merged_df = df.copy()
         merged_df.loc[merged_df['Available Year'] < year, 'Cost ($)'] = 0
-        print("Initializing Topsis calculation")
-        tp_df = tps.apply_topsis(year, merged_df)
-        # tp_df.to_csv(f'data/output/tradeoff/topsis/topsis_output_{year}.csv', index=False)
-        print(f"TOPSIS calculation done for year {year}")
+        # print("Initializing Topsis calculation")
+        # tp_df = tps.apply_topsis(year, merged_df)
+        # # tp_df.to_csv(f'data/output/tradeoff/topsis/topsis_output_{year}.csv', index=False)
+        # print(f"TOPSIS calculation done for year {year}")
            
-        column_mapping = {
-            'Unnamed: 0': 'Index',
-        } 
-        tp_df.rename(columns=column_mapping, inplace=True) 
+        # column_mapping = {
+        #     'Unnamed: 0': 'Index',
+        # } 
+        # tp_df.rename(columns=column_mapping, inplace=True) 
         
         print(f"Multiobjective Optimization...")
-        mo = MultiObjectiveFleetOptimizer(tp_df)
+        mo = MultiObjectiveFleetOptimizer(merged_df)
         df = mo.get_optimized_results(year)
         # df.to_csv(f'data/output/tradeoff/topsis/multi_objective_fleet_allocation_{year}.csv', index=False)
         print("Optimization done, output saved to file")
@@ -76,23 +76,23 @@ def main():
         
         df = eval.apply_metrics_to_dataframe(df)
         output_list.append(df)
-        df.to_csv(f'data/output/tradeoff/topsis/multi_objective_fleet_allocation_eval_{year}.csv', index=False)
+        df.to_csv(f'data/output/tradeoff/notopsis/multi_objective_fleet_allocation_eval_{year}.csv', index=False)
         
         print(f"Optimization and Evaluation done for year {year}")
         print(f"Generating summary for year {year}")
         summary_df = summarizer.summarize(df, year)
-        summary_df.to_csv('data/output/tradeoff/topsis/multiobjective_summary.csv')
+        summary_df.to_csv('data/output/tradeoff/notopsis/multiobjective_summary.csv')
         print("Summary generated")
         
-        engine = sqlops.create_sqlalchemy_engine(connection_string)
-        df.to_sql(f'multi_objective_fleet_allocation_eval_{year}', con=engine, if_exists='replace') 
-        summary_df.to_sql('multiobjective_summary.csv', con=engine, if_exists='replace')
-        print()
+        # engine = sqlops.create_sqlalchemy_engine(connection_string)
+        # df.to_sql(f'multi_objective_fleet_allocation_eval_{year}', con=engine, if_exists='replace') 
+        # summary_df.to_sql('multiobjective_summary.csv', con=engine, if_exists='replace')
+        # print()
         
-    result = pd.concat(output_list)
-    engine = sqlops.create_sqlalchemy_engine(connection_string)
+    # result = pd.concat(output_list)
+    # engine = sqlops.create_sqlalchemy_engine(connection_string)
 
-    result.to_sql(f'combined_multi_objective_fleet_allocation_eval', con=engine, if_exists='replace') 
+    # result.to_sql(f'combined_multi_objective_fleet_allocation_eval', con=engine, if_exists='replace') 
     
 
 if __name__ == "__main__":

@@ -62,7 +62,7 @@ class Topsis:
             criteria_columns = ['carbon_emissions_per_km','Operating_Cost', 'Cost ($)']
             
             # Define weights (equal weights in this case)
-            weights = [0.5, 0.4, 0.1]
+            weights = [0.5, 0.5, 0.5]
             
             # Define impact directions (both to be minimized)
             impacts = ['-', '-', '-']
