@@ -41,7 +41,7 @@ class MultiObjectiveFleetOptimizer:
                 'insurance_cost': row['insurance_cost'],
                 'maintenance_cost': row['maintenance_cost'],
                 'fuel_costs_per_km': row['fuel_costs_per_km'],
-                'Total_Cost': row['Total_Cost'],
+                'Operating_Cost': row['Operating_Cost'],
                 'Topsis_Score': row['Topsis_Score'],
                 'Rank': row['Rank']
             })
@@ -91,7 +91,7 @@ class MultiObjectiveFleetOptimizer:
         total_topsis = sum(topsis_scores)
         normalized_topsis = [score/total_topsis for score in topsis_scores] if total_topsis > 0 else [1/len(topsis_scores)] * len(topsis_scores)
         # prob = [(1 - x)/10 for x in normalized_topsis]
-        vehicle_types = [v['vehicle_type'] for v in vehicles]
+        vehicle_types = [v['ID'] for v in vehicles]
         # pprint(normalized_topsis)
         while len(population) < population_size:
 
@@ -169,7 +169,7 @@ class MultiObjectiveFleetOptimizer:
             return float('-inf')
             
         vehicles = self.vehicles_by_size_distance[size_distance]
-        vehicle_dict = {v['vehicle_type']: v for v in vehicles}
+        vehicle_dict = {v['ID']: v for v in vehicles}
         demand = vehicles[0]['demand']
 
         total_cost = 0
@@ -200,7 +200,7 @@ class MultiObjectiveFleetOptimizer:
         multi_objective_score = (
             self.cost_weight * normalized_cost + 
             self.emission_weight * normalized_emissions +
-            0.1 * (weighted_topsis / sum(solution.values()) if sum(solution.values()) > 0 else 0)
+            1 * (weighted_topsis / sum(solution.values()) if sum(solution.values()) > 0 else 0)
         )
         
         return multi_objective_score
@@ -216,7 +216,7 @@ class MultiObjectiveFleetOptimizer:
                 continue
                 
             vehicles = self.vehicles_by_size_distance[size_distance]
-            vehicle_dict = {v['vehicle_type']: v for v in vehicles}
+            vehicle_dict = {v['ID']: v for v in vehicles}
             
             total_cost = 0
             total_emissions = 0
@@ -326,7 +326,7 @@ class MultiObjectiveFleetOptimizer:
         metrics = []
         for i, solution in enumerate(solutions):
             vehicles = self.vehicles_by_size_distance[size_distance]
-            vehicle_dict = {v['vehicle_type']: v for v in vehicles}
+            vehicle_dict = {v['ID']: v for v in vehicles}
             
             total_cost = 0
             total_emissions = 0
@@ -368,7 +368,7 @@ class MultiObjectiveFleetOptimizer:
         solution_distances = [(solutions[i], distances[i]) for i in range(len(solutions))]
         
         sorted_pairs = sorted(solution_distances, key=lambda x: x[1], reverse=True)
-
+        
         return [pair[0] for pair in sorted_pairs]
 
     def get_optimized_results(self, year) -> pd.DataFrame:
@@ -383,7 +383,7 @@ class MultiObjectiveFleetOptimizer:
             pprint(best_solution)
             for vehicle_type, num_vehicles in best_solution.items():
                 if num_vehicles > 0:
-                    vehicle_data = next(v for v in self.vehicles_by_size_distance[size_distance] if v['vehicle_type'] == vehicle_type)
+                    vehicle_data = next(v for v in self.vehicles_by_size_distance[size_distance] if v['ID'] == vehicle_type)
                     total_cost = self.calculate_total_cost(num_vehicles, vehicle_data)
                     total_emissions = self.calculate_total_emissions(num_vehicles, vehicle_data)
                     Allocation = vehicle_data.get('Allocation')
@@ -395,8 +395,8 @@ class MultiObjectiveFleetOptimizer:
                         "Size":Size,
                         "Distance_demand":Distance_demand,
                         "Demand (km)": vehicle_data['demand'],
-                        "ID": vehicle_data['ID'],
-                        "Vehicle": vehicle_type,
+                        "ID": vehicle_type,
+                        "Vehicle": vehicle_data['vehicle_type'],
                         "Available Year":vehicle_data['Available Year'],
                         "Cost ($)": vehicle_data['Cost ($)'],
                         "Yearly range (km)": vehicle_data['Yearly range (km)'],
@@ -407,7 +407,7 @@ class MultiObjectiveFleetOptimizer:
                         "insurance_cost": vehicle_data['insurance_cost'],
                         "maintenance_cost": vehicle_data['maintenance_cost'],
                         "fuel_costs_per_km": vehicle_data['fuel_costs_per_km'],
-                        "Total_Cost": vehicle_data['Total_Cost'],
+                        "Operating_Cost": vehicle_data['Operating_Cost'],
                         'Topsis_Score': vehicle_data['Topsis_Score'],
                         'Rank': vehicle_data['Rank'],
                         "No_of_vehicles": num_vehicles,

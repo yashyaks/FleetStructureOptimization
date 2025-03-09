@@ -171,6 +171,6 @@ class VehicleAllocation:
         df['insurance_cost'] = self.yearly_insurance_cost_per_vehicle(df)
         df['maintenance_cost'] = self.yearly_maintenance_cost_per_vehicle(df)
         df['fuel_costs_per_km'] = self.per_km_fuel_cost_per_vehicle(df, year)
-        df['Total_Cost'] = df['insurance_cost'] + df['maintenance_cost'] + df['fuel_costs_per_km'] + df['Cost ($)']
+        df['Operating_Cost'] = df['insurance_cost'] + df['maintenance_cost'] + df['fuel_costs_per_km'] 
         
         return df

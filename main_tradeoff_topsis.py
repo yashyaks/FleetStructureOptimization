@@ -11,8 +11,8 @@ from pprint import pprint
 def main():
     va = VehicleAllocation()
     tp = Topsis()
-    # ev = Evaluation()
-    # summarizer = Summary()
+    ev = Evaluation()
+    summarizer = Summary()
     
     for year in range(2023, 2039):
         print(f"Starting process for year {year}")
@@ -29,9 +29,8 @@ def main():
             
         else:
             merged_df = df.copy()
-        
+        merged_df.loc[merged_df['Available Year'] < year, 'Cost ($)'] = 0
         print("Initializing Topsis calculation")
-        pprint(merged_df)
         tp_df = tp.apply_topsis(year, merged_df)
         tp_df.to_csv(f'data/output/tradeoff/topsis/topsis_output_{year}.csv', index=False)
         print(f"TOPSIS calculation done for year {year}")
@@ -48,15 +47,16 @@ def main():
         print("Optimization done, output saved to file")
         
         
-        # df = ev.apply_metrics_to_dataframe(df)
-        # df.to_csv(f'data/output/tradeoff/topsis/multi_objective_fleet_allocation_eval_{year}.csv', index=False)
-        # print(f"Optimization and Evaluation done for year {year}")
-        # print(f"Generating summary for year {year}")
-        # summary_df = summarizer.summarize(df, year)
-        # summary_df.to_csv('data/output/tradeoff/topsis/multiobjective_summary.csv')
-        # print("Summary generated")
+        df = ev.apply_metrics_to_dataframe(df)
+        df.to_csv(f'data/output/tradeoff/topsis/multi_objective_fleet_allocation_eval_{year}.csv', index=False)
+        print(f"Optimization and Evaluation done for year {year}")
+        print(f"Generating summary for year {year}")
+        summary_df = summarizer.summarize(df, year)
+        summary_df.to_csv('data/output/tradeoff/topsis/multiobjective_summary.csv')
+        print("Summary generated")
         
         print()
-        
+    
+    for year in range()
 if __name__ == "__main__":
     main()

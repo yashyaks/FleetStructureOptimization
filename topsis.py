@@ -59,13 +59,13 @@ class Topsis:
         # Perform TOPSIS for each combination
         for (size, distance), group in combinations:
             # Define criteria columns
-            criteria_columns = ['carbon_emissions_per_km','Total_Cost']
+            criteria_columns = ['carbon_emissions_per_km','Operating_Cost', 'Cost ($)']
             
             # Define weights (equal weights in this case)
-            weights = [0.5, 0.5]
+            weights = [0.5, 0.4, 0.1]
             
             # Define impact directions (both to be minimized)
-            impacts = ['-', '-']
+            impacts = ['-', '-', '-']
             
             # Perform TOPSIS
             result = self.topsis_algo(group, criteria_columns, weights, impacts)
