@@ -5,10 +5,10 @@ class Summary:
         self.summary_df = pd.DataFrame()
     
     def yearly_cost_total(self, df):
-        return (df['Cost ($)'] + df['Operating_Cost']).sum()
+        return round((df['Cost ($)'] + df['Operating_Cost']).sum(), 0)
         
     def yearly_carbon_emissions_total(self, df):
-        return (df['No_of_vehicles'] * df['carbon_emissions_per_km'] * (df['DemandFulfillment'] * df['Demand (km)'])).sum()
+        return round((df['No_of_vehicles'] * df['carbon_emissions_per_km'] * (df['DemandFulfillment'] * df['Demand (km)'])).sum(), 0)
     
     def summarize(self, df, year):
         """Summarize yearly metrics and store in summary DataFrame"""

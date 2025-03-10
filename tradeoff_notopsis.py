@@ -103,10 +103,10 @@ class MultiObjectiveFleetOptimizer:
                                                 )
                 selected_type = vehicle_types[selected_idx]
                 
-                if solution[selected_type] < remaining_vehicles and random.random() < 0.9:
+                if solution[selected_type] < remaining_vehicles and random.random() < 0.7:
                     solution[selected_type] += 1
                     remaining_vehicles -= 1
-                elif random.random() < 0.9:
+                elif random.random() < 0.2:
                     break
             
             if self.is_valid_solution(solution, size_distance):
@@ -265,7 +265,7 @@ class MultiObjectiveFleetOptimizer:
 
     def non_dominated_sorting(self, population: List[Dict], size_distance: Tuple):
         ranks = self.pareto_rank(population, size_distance)
-        ranks.sort(key=lambda x: x[1])  # Sort by rank (lower is better)
+        ranks.sort(key=lambda x: x[1], reverse=True)  # Sort by rank (lower is better)
         return ranks
 
     def optimize(self, size_distance: Tuple, generations: int = 100, population_size: int = 50) -> Dict:

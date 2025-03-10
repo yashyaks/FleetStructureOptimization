@@ -102,7 +102,7 @@ class MultiObjectiveFleetOptimizer:
                 selected_idx = np.random.choice(range(len(vehicle_types)), p=normalized_topsis)
                 selected_type = vehicle_types[selected_idx]
                 
-                if solution[selected_type] < remaining_vehicles:
+                if solution[selected_type] < remaining_vehicles and random.random() < 0.7:
                     solution[selected_type] += 1
                     remaining_vehicles -= 1
                 elif random.random() < 0.2:
@@ -259,12 +259,11 @@ class MultiObjectiveFleetOptimizer:
             
             ranks.extend(pareto_front)
             rank += 1
-        
         return ranks
 
     def non_dominated_sorting(self, population: List[Dict], size_distance: Tuple):
         ranks = self.pareto_rank(population, size_distance)
-        ranks.sort(key=lambda x: x[1])  # Sort by rank (lower is better)
+        ranks.sort(key=lambda x: x[1], reverse=True)  # Sort by rank (lower is better)
         return ranks
 
     def optimize(self, size_distance: Tuple, generations: int = 100, population_size: int = 50) -> Dict:
@@ -275,7 +274,6 @@ class MultiObjectiveFleetOptimizer:
         for gen in range(generations):
             offspring = []
             while len(offspring) < population_size:
-
                 parent1 = self.tournament_selection(population, size_distance)
                 parent2 = self.tournament_selection(population, size_distance)
                 
@@ -311,9 +309,9 @@ class MultiObjectiveFleetOptimizer:
                 fitness = self.fitness_function(solution, size_distance)
                 if fitness > best_fitness:
                     best_solution = solution
-                    best_fitness = fitness     
+                    best_fitness = fitness
         return best_solution
-
+    
     def tournament_selection(self, population: List[Dict], size_distance: Tuple, tournament_size: int = 3) -> Dict:
         """Tournament selection based on fitness"""
         tournament = random.sample(population, min(tournament_size, len(population)))
@@ -377,7 +375,6 @@ class MultiObjectiveFleetOptimizer:
         for size_distance in self.vehicles_by_size_distance.keys():
             best_solution = self.optimize(size_distance)
             max_vehicles = self.max_vehicles_by_group[size_distance]
-            
             if best_solution is None:
                 continue
             pprint(best_solution)
@@ -413,6 +410,7 @@ class MultiObjectiveFleetOptimizer:
                         "No_of_vehicles": num_vehicles,
                         "Max Vehicles": max_vehicles,               
                     })
+                    
         
         # f_df = pd.DataFrame({
         #     "Population": list(range(1, len(fitness_scores) + 1)),

@@ -7,6 +7,7 @@ from summary import Summary
 from utilities.my_sql_operations import MySQLOperations
 import pandas as pd
 import os
+from pprint import pprint
 
 def main():
     va = VehicleAllocation()
@@ -70,11 +71,13 @@ def main():
         print(f"Multiobjective Optimization...")
         mo = MultiObjectiveFleetOptimizer(tp_df)
         df = mo.get_optimized_results(year)
+
         # df.to_csv(f'data/output/tradeoff/topsis/multi_objective_fleet_allocation_{year}.csv', index=False)
         print("Optimization done, output saved to file")
         
-        
+        # pprint(solutions)
         df = eval.apply_metrics_to_dataframe(df)
+
         output_list.append(df)
         df.to_csv(f'data/output/tradeoff/topsis/multi_objective_fleet_allocation_eval_{year}.csv', index=False)
         
@@ -88,10 +91,41 @@ def main():
         df.to_sql(f'multi_objective_fleet_allocation_eval_{year}', con=engine, if_exists='replace') 
         summary_df.to_sql('multiobjective_summary.csv', con=engine, if_exists='replace')
         print()
-        
+    
     result = pd.concat(output_list)
     engine = sqlops.create_sqlalchemy_engine(connection_string)
+    column_mapping = {
+            'index': 'index',
+            'Allocation': 'allocation',
+            'Operating Year': 'operating_year',
+            'Size': 'size',
+            'Distance_demand': 'distance_demand',
+            'Demand (km)': 'demand_km',
+            'ID': 'id',
+            'Vehicle': 'vehicle',
+            'Available Year': 'available_year',
+            'Cost ($)': 'cost_dollars',
+            'Yearly range (km)': 'yearly_range_km',
+            'Distance_vehicle': 'distance_vehicle',
+            'Fuel': 'fuel',
+            'Consumption (unit_fuel/km)': 'consumption_unit_fuel_per_km',
+            'carbon_emissions_per_km': 'carbon_emissions_per_km',
+            'insurance_cost': 'insurance_cost',
+            'maintenance_cost': 'maintenance_cost',
+            'fuel_costs_per_km': 'fuel_cost_per_km',
+            'Operating_Cost': 'operating_cost',
+            'Topsis_Score': 'topsis_score',
+            'Rank': 'rank',
+            'No_of_vehicles': 'no_of_vehicles',
+            'Max Vehicles': 'max_vehicles',
+            'Utilization (%)': 'utilization_percent',
+            'DemandFulfillment': 'demand_fulfillment',
+            'Total_Cost': 'total_cost',
+            'Total_CE': 'total_ce'
+        }
 
+    # Rename columns using the dictionary
+    result.rename(columns=column_mapping, inplace=True)
     result.to_sql(f'combined_multi_objective_fleet_allocation_eval', con=engine, if_exists='replace') 
     
 
