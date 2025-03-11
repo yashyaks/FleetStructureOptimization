@@ -72,7 +72,7 @@ def main():
         mo = MultiObjectiveFleetOptimizer(tp_df)
         df = mo.get_optimized_results(year)
 
-        # df.to_csv(f'data/output/tradeoff/topsis/multi_objective_fleet_allocation_{year}.csv', index=False)
+        df.to_csv(f'data/output/tradeoff/topsis/multi_objective_fleet_allocation_{year}.csv', index=False)
         print("Optimization done, output saved to file")
         
         # pprint(solutions)

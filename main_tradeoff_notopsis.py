@@ -20,12 +20,12 @@ def main():
     for year in range(2023, 2039):
         print(f"Starting process for year {year}")
         df = va.allocate_vehicles(year)
-        # df.to_csv(f'data/output/tradeoff/topsis/allocation_output_{year}.csv', index=False)
+        # df.to_csv(f'data/output/tradeoff/notopsis/allocation_output_{year}.csv', index=False)
         print(f"Allocated vehicles for year {year}")
 
-        if os.path.exists(f"data/output/tradeoff/topsis/multi_objective_fleet_allocation_{(year-1)}.csv"):
+        if os.path.exists(f"data/output/tradeoff/notopsis/multi_objective_fleet_allocation_{(year-1)}.csv"):
             print("Merging with previous year vehicles")
-            df1 = pd.read_csv(f"data/output/tradeoff/topsis/multi_objective_fleet_allocation_{(year-1)}.csv")
+            df1 = pd.read_csv(f"data/output/tradeoff/notopsis/multi_objective_fleet_allocation_{(year-1)}.csv")
             df1['Operating Year'] = year
             merged_df = pd.concat([df1, df], ignore_index=True, sort=False)
             merged_df = merged_df[merged_df['Available Year'] > (year-5)]
@@ -70,7 +70,7 @@ def main():
         print(f"Multiobjective Optimization...")
         mo = MultiObjectiveFleetOptimizer(merged_df)
         df = mo.get_optimized_results(year)
-        # df.to_csv(f'data/output/tradeoff/topsis/multi_objective_fleet_allocation_{year}.csv', index=False)
+        df.to_csv(f'data/output/tradeoff/notopsis/multi_objective_fleet_allocation_{year}.csv', index=False)
         print("Optimization done, output saved to file")
         
         
