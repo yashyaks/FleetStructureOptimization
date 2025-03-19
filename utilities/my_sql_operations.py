@@ -1,5 +1,7 @@
 import mysql.connector
 import os
+from sqlalchemy import create_engine
+        
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -31,6 +33,11 @@ class MySQLOperations:
         )
         return connection
     
+    def create_sqlalchemy_engine(self, connection_string):
+        engine = create_engine(connection_string, echo=False)
+        
+        return engine
+        
     def fetch_data(self, query):
         """
         Fetch data from the MySQL database
