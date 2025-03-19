@@ -1,8 +1,8 @@
 from demand import VehicleAllocation
 from topsis import Topsis
 from tradeoff_topsis import MultiObjectiveFleetOptimizer
-from evaluation import Evaluation
-from summary import Summary
+from utilities.evaluation import Evaluation
+from utilities.summary import Summary
 
 from utilities.my_sql_operations import MySQLOperations
 import pandas as pd
