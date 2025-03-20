@@ -1,5 +1,4 @@
 from utilities.my_sql_operations import MySQLOperations
-from utilities.costs import Costs
 import pandas as pd
 
 class CarbonEmissions:
@@ -47,3 +46,20 @@ class CarbonEmissions:
         
         return emissions_dict
 
+    def per_km_carbon_emmissions_per_vehicle(self, fleet_details: pd.DataFrame, op_year: int):
+        """
+        Calculates per km carbon emissions for one vehicle
+        """     
+        my_sql_operations = MySQLOperations() 
+        
+        query = f"""SELECT fuel, emissions_co2_per_unit_fuel FROM fuels WHERE year = {op_year}"""
+        fuel_data, columns = my_sql_operations.fetch_data(query) 
+        fuel_df = pd.DataFrame(fuel_data, columns=columns)
+
+        merged_df = pd.merge(fleet_details, fuel_df, left_on='fuel', right_on='fuel', how='left')
+        
+        merged_df['carbon_emissions_per_km'] = (
+            merged_df['emissions_co2_per_unit_fuel'] *
+            merged_df['consumption_unitfuel_per_km']
+        )
+        return merged_df['carbon_emissions_per_km']
