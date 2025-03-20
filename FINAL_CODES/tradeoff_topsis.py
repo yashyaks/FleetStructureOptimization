@@ -271,10 +271,66 @@ class MultiObjectiveFleetOptimizer:
         multi_objective_score = (
             self.cost_weight * normalized_cost + 
             self.emission_weight * normalized_emissions +
-            0.1 * (weighted_topsis / sum(solution.values()) if sum(solution.values()) > 0 else 0)  # Small TOPSIS bonus
+            0.9 * (weighted_topsis / sum(solution.values()) if sum(solution.values()) > 0 else 0)  # Small TOPSIS bonus
         )
         
         return multi_objective_score
+
+
+    # def fitness_function(self, solution: Dict, size_distance: Tuple) -> float:
+    #     """
+    #     Enhanced multi-objective fitness function that emphasizes cost, emissions,
+    #     TOPSIS score, and strict demand fulfillment.
+    #     """
+    #     if not self.is_valid_solution(solution, size_distance):
+    #         return float('-inf')
+
+    #     vehicles = self.vehicles_by_size_distance[size_distance]
+    #     vehicle_dict = {v['vehicle_type']: v for v in vehicles}
+    #     demand = vehicles[0]['demand']
+
+    #     # Initialize metrics
+    #     total_cost = 0
+    #     total_emissions = 0
+    #     total_capacity = 0
+    #     weighted_topsis = 0
+    #     total_vehicles = sum(solution.values())
+
+    #     # Compute the metrics
+    #     for vehicle_type, num_vehicles in solution.items():
+    #         if num_vehicles > 0:
+    #             vehicle = vehicle_dict[vehicle_type]
+    #             total_cost += self.calculate_total_cost(num_vehicles, vehicle)
+    #             total_emissions += self.calculate_total_emissions(num_vehicles, vehicle)
+    #             total_capacity += num_vehicles * vehicle['yearly_range']
+    #             weighted_topsis += num_vehicles * vehicle['topsis_score']
+
+    #     # Stronger penalty for demand fulfillment
+    #     demand_penalty = max(0, demand - total_capacity) * 5000  # Increased penalty weight
+
+    #     # Normalize cost and emissions
+    #     max_possible_cost = max(self.calculate_total_cost(self.max_vehicles_by_group[size_distance], v) for v in vehicles)
+    #     max_possible_emissions = max(self.calculate_total_emissions(self.max_vehicles_by_group[size_distance], v) for v in vehicles)
+
+    #     normalized_cost = 1 - (total_cost / max_possible_cost if max_possible_cost > 0 else 0)
+    #     normalized_emissions = 1 - (total_emissions / max_possible_emissions if max_possible_emissions > 0 else 0)
+
+    #     # More emphasis on TOPSIS score
+    #     normalized_topsis = (weighted_topsis / total_vehicles) if total_vehicles > 0 else 0
+
+    #     # Apply non-linear transformation to emphasize cost & emission reduction
+    #     normalized_cost = normalized_cost ** 2  # Quadratic scaling
+    #     normalized_emissions = normalized_emissions ** 2  
+
+    #     # Adjusted weights
+    #     multi_objective_score = (
+    #         self.cost_weight * normalized_cost + 
+    #         self.emission_weight * normalized_emissions +
+    #         1.2 * normalized_topsis  # Increased TOPSIS weight
+    #     ) - demand_penalty  # Stronger penalty
+
+    #     return multi_objective_score if total_capacity >= demand else float('-inf')  # Hard constraint
+
 
     def pareto_rank(self, population: List[Dict], size_distance: Tuple) -> List[Tuple[Dict, int]]:
         """
@@ -596,8 +652,8 @@ def main(csv_path: str, emission_weight: float = 0.5, cost_weight: float = 0.5):
 
 if __name__ == "__main__":
     # Define weights for the objectives (must sum to 1.0)
-    emission_weight = 0.5  # 60% emphasis on emissions reduction
-    cost_weight = 0.5  # 40% emphasis on cost reduction
+    emission_weight = 0.5
+    cost_weight = 0.5  
     
     # Run for a single file
     # csv_path = "topsis_result/topsis_results_2023.csv"

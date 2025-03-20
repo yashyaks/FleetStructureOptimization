@@ -1,4 +1,4 @@
-ID,Vehicle,Size,Year,Cost ($),Yearly range (km),Distance
+ID,Vehicle,Size,Year,Cost,Yearly_range,Distance
 BEV_S1_2023,BEV,S1,2023,187000,102000,D1
 BEV_S1_2024,BEV,S1,2024,177650,102000,D1
 BEV_S1_2025,BEV,S1,2025,168767,102000,D1

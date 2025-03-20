@@ -1,0 +1,2 @@
+Year,Size,Distance,Demand (km),ID,Vehicle,Year_y,Cost ($),Yearly range (km),Fuel,Consumption (unit_fuel/km),emissions (CO2/unit_fuel),Cost ($/unit_fuel),cost Uncertainty (±%),Carbon emission CO2/kg
+2023,S1,D4,414315,Diesel_S1_2023,Diesel,2023,85000,102000,B20,0.223016,3.04858,1.220845,0,11677957

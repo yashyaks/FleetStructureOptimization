@@ -1,0 +1,17 @@
+Allocation,Vehicle,Fuel,no_of_vehicles,Max Vehicles,Demand,Assigned Demand,Yearly Range,Utilization,Demand_Fulfillment,Carbon Emissions,Emissions Per KM
+"Size S1, Distance D1",BEV,Electricity,11,12,1080198,1080198,102000,96.27,100.0,0.0,0.0
+"Size S1, Distance D2",BEV,Electricity,36,38,3606840,3606840,102000,98.23,100.0,0.0,0.0
+"Size S1, Distance D3",BEV,Electricity,44,47,4474763,4474763,102000,99.71,100.0,0.0,0.0
+"Size S1, Distance D4",BEV,Electricity,6,6,575445,575445,102000,94.03,100.0,0.0,0.0
+"Size S2, Distance D1",BEV,Electricity,13,14,1344795,1344795,106000,97.59,100.0,0.0,0.0
+"Size S2, Distance D2",BEV,Electricity,18,19,1869435,1869435,106000,97.98,100.0,0.0,0.0
+"Size S2, Distance D3",BEV,Electricity,10,11,1043936,1043936,106000,98.48,100.0,0.0,0.0
+"Size S2, Distance D4",BEV,Electricity,2,2,169472,169472,106000,79.94,100.0,0.0,0.0
+"Size S3, Distance D1",BEV,Electricity,39,41,2832153,2832153,73000,99.48,100.0,0.0,0.0
+"Size S3, Distance D2",BEV,Electricity,43,45,3096840,3096840,73000,98.66,100.0,0.0,0.0
+"Size S3, Distance D3",BEV,Electricity,19,19,1320768,1320768,73000,95.22,100.0,0.0,0.0
+"Size S3, Distance D4",BEV,Electricity,4,4,273053,273053,73000,93.51,100.0,0.0,0.0
+"Size S4, Distance D1",BEV,Electricity,1,1,20807,20807,118000,17.63,100.0,0.0,0.0
+"Size S4, Distance D2",BEV,Electricity,9,10,1057133,1057133,118000,99.54,100.0,0.0,0.0
+"Size S4, Distance D3",BEV,Electricity,2,2,146333,146333,118000,62.01,100.0,0.0,0.0
+"Size S4, Distance D4",BEV,Electricity,1,1,2280,2280,118000,1.93,100.0,0.0,0.0

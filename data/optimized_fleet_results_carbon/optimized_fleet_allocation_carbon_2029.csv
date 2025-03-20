@@ -1,0 +1,17 @@
+Allocation,Vehicle,Fuel,no_of_vehicles,Max Vehicles,Demand,Assigned Demand,Yearly Range,Utilization,Demand_Fulfillment,Carbon Emissions,Emissions Per KM
+"Size S1, Distance D1",BEV,Electricity,10,11,1009629,1009629,102000,98.98,100.0,0.0,0.0
+"Size S1, Distance D2",BEV,Electricity,32,33,3188349,3188349,102000,97.68,100.0,0.0,0.0
+"Size S1, Distance D3",BEV,Electricity,39,41,3892298,3892298,102000,97.85,100.0,0.0,0.0
+"Size S1, Distance D4",LNG,BioLNG,5,5,484671,484671,102000,95.03,100.0,28316.32,0.0584
+"Size S2, Distance D1",BEV,Electricity,12,12,1173616,1173616,106000,92.27,100.0,0.0,0.0
+"Size S2, Distance D2",BEV,Electricity,16,16,1608555,1608555,106000,94.84,100.0,0.0,0.0
+"Size S2, Distance D3",BEV,Electricity,9,10,916617,916617,106000,96.08,100.0,0.0,0.0
+"Size S2, Distance D4",LNG,BioLNG,2,2,148322,148322,106000,69.96,100.0,8702.47,0.0587
+"Size S3, Distance D1",BEV,Electricity,35,36,2497153,2497153,73000,97.74,100.0,0.0,0.0
+"Size S3, Distance D2",BEV,Electricity,39,41,2795108,2795108,73000,98.18,100.0,0.0,0.0
+"Size S3, Distance D3",BEV,Electricity,17,17,1175528,1175528,73000,94.72,100.0,0.0,0.0
+"Size S3, Distance D4",LNG,BioLNG,4,4,234155,234155,73000,80.19,100.0,13752.09,0.0587
+"Size S4, Distance D1",BEV,Electricity,1,1,17544,17544,118000,14.87,100.0,0.0,0.0
+"Size S4, Distance D2",BEV,Electricity,8,8,885863,885863,118000,93.84,100.0,0.0,0.0
+"Size S4, Distance D3",BEV,Electricity,2,2,135803,135803,118000,57.54,100.0,0.0,0.0
+"Size S4, Distance D4",LNG,BioLNG,1,1,2113,2113,118000,1.79,100.0,123.6,0.0585
