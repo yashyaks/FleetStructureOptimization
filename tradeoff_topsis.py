@@ -4,6 +4,8 @@ import math
 import random 
 from typing import List, Dict, Tuple
 from pprint import pprint
+import multiprocessing as mp
+
 
 class MultiObjectiveFleetOptimizer:
     def __init__(self, data: pd.DataFrame, emission_weight: float = 0.5, cost_weight: float = 0.5):
@@ -368,6 +370,7 @@ class MultiObjectiveFleetOptimizer:
         sorted_pairs = sorted(solution_distances, key=lambda x: x[1], reverse=True)
         
         return [pair[0] for pair in sorted_pairs]
+
 
     def get_optimized_results(self, year) -> pd.DataFrame:
         results = []

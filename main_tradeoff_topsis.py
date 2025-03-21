@@ -3,7 +3,6 @@ from topsis import Topsis
 from tradeoff_topsis import MultiObjectiveFleetOptimizer
 from utilities.evaluation import Evaluation
 from utilities.summary import Summary
-
 from utilities.my_sql_operations import MySQLOperations
 import pandas as pd
 import os
