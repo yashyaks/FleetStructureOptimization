@@ -82,17 +82,17 @@ def main():
         df = eval.apply_metrics_to_dataframe(df)
 
         output_list.append(df)
-        df.to_csv(f'data/output/tradeoff/topsis/multi_objective_fleet_allocation_eval_{year}.csv', index=False)
+        # df.to_csv(f'data/output/tradeoff/topsis/multi_objective_fleet_allocation_eval_{year}.csv', index=False)
         
         print(f"Optimization and Evaluation done for year {year}")
         print(f"Generating summary for year {year}")
         summary_df = summarizer.summarize(df, year)
-        summary_df.to_csv('data/output/tradeoff/topsis/multiobjective_summary.csv')
+        # summary_df.to_csv('data/output/tradeoff/topsis/multiobjective_summary.csv')
         print("Summary generated")
         
         engine = sqlops.create_sqlalchemy_engine(connection_string)
         df.to_sql(f'multi_objective_fleet_allocation_eval_{year}', con=engine, if_exists='replace') 
-        summary_df.to_sql('multiobjective_summary.csv', con=engine, if_exists='replace')
+        summary_df.to_sql('multiobjective_summary', con=engine, if_exists='replace')
         print()
     
     result = pd.concat(output_list)
