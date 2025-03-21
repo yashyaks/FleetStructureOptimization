@@ -27,10 +27,13 @@ def main():
         df = va.allocate_vehicles(year)
         # df.to_csv(f'data/output/tradeoff/topsis/allocation_output_{year}.csv', index=False)
         print(f"Allocated vehicles for year {year}")
-        if os.path.exists(f"data/output/tradeoff/topsis/multi_objective_fleet_allocation_{(year-1)}.csv"):
+        if sqlops.table_exists(f'multi_objective_fleet_allocation_eval_{(year-1)}') == 1:
             print("Merging with previous year vehicles")
-            df1 = pd.read_csv(f"data/output/tradeoff/topsis/multi_objective_fleet_allocation_{(year-1)}.csv")
-            df1['Operating Year'] = year
+            
+            # df1 = pd.read_csv(f"data/output/tradeoff/topsis/multi_objective_fleet_allocation_{(year-1)}.csv")
+            query = f"""SELECT * FROM multi_objective_fleet_allocation_eval_{(year-1)}WHERE `Operating Year` = {year}"""
+            vehicles_data, columns = sqlops.fetch_data(query)
+            df1 = pd.DataFrame(vehicles_data, columns=columns)
             merged_df = pd.concat([df1, df], ignore_index=True, sort=False)
             merged_df = merged_df[merged_df['Available Year'] > (year-5)]
             merged_df.drop('demand', axis=1, inplace=True)
@@ -75,7 +78,7 @@ def main():
         mo = MultiObjectiveFleetOptimizer(tp_df)
         df = mo.get_optimized_results(year)
 
-        df.to_csv(f'data/output/tradeoff/topsis/multi_objective_fleet_allocation_{year}.csv', index=False)
+        # df.to_csv(f'data/output/tradeoff/topsis/multi_objective_fleet_allocation_{year}.csv', index=False)
         print("Optimization done, output saved to file")
         
         # pprint(solutions)
