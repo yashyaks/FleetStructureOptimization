@@ -23,7 +23,6 @@ def main():
         df = va.allocate_vehicles(year)
         # df.to_csv(f'data/output/tradeoff/topsis/allocation_output_{year}.csv', index=False)
         print(f"Allocated vehicles for year {year}")
-
         if os.path.exists(f"data/output/tradeoff/topsis/multi_objective_fleet_allocation_{(year-1)}.csv"):
             print("Merging with previous year vehicles")
             df1 = pd.read_csv(f"data/output/tradeoff/topsis/multi_objective_fleet_allocation_{(year-1)}.csv")
@@ -55,8 +54,8 @@ def main():
             merged_df = df.copy()
                   
         else:
-            
             merged_df = df.copy()
+        print(merged_df.columns)
         merged_df.loc[merged_df['Available Year'] < year, 'Cost ($)'] = 0
         print("Initializing Topsis calculation")
         tp_df = tps.apply_topsis(year, merged_df)

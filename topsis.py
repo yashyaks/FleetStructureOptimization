@@ -51,7 +51,7 @@ class Topsis:
         df.reset_index(drop=True, inplace=True)
         
         # Get unique combinations of Size and Distance_x
-        combinations = df.groupby(['Size', 'Distance_demand'])
+        combinations = df.groupby(['size', 'Distance_demand'])
 
         # Store results
         results = []
@@ -59,7 +59,7 @@ class Topsis:
         # Perform TOPSIS for each combination
         for (size, distance), group in combinations:
             # Define criteria columns
-            criteria_columns = ['carbon_emissions_per_km','Operating_Cost', 'Cost ($)']
+            criteria_columns = ['carbon_emissions_per_km','Operating_Cost', 'cost']
             
             # Define weights (equal weights in this case)
             weights = [0.5, 0.5, 0.5]
@@ -71,7 +71,7 @@ class Topsis:
             result = self.topsis_algo(group, criteria_columns, weights, impacts)
             
             # Add size and distance info to results
-            result['Size'] = size
+            # result['Size'] = size
             result['Distance'] = distance
             
             results.append(result)
