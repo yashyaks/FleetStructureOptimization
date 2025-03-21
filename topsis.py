@@ -72,7 +72,7 @@ class Topsis:
             
             # Add size and distance info to results
             # result['Size'] = size
-            result['Distance'] = distance
+            # result['Distance'] = distance
             
             results.append(result)
 

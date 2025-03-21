@@ -55,7 +55,7 @@ def main():
                   
         else:
             merged_df = df.copy()
-        print(merged_df.columns)
+        
         merged_df.loc[merged_df['Available Year'] < year, 'Cost ($)'] = 0
         print("Initializing Topsis calculation")
         tp_df = tps.apply_topsis(year, merged_df)
@@ -66,7 +66,7 @@ def main():
             'Unnamed: 0': 'Index',
         } 
         tp_df.rename(columns=column_mapping, inplace=True) 
-        
+        print(tp_df.columns)
         print(f"Multiobjective Optimization...")
         mo = MultiObjectiveFleetOptimizer(tp_df)
         df = mo.get_optimized_results(year)

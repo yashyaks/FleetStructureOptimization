@@ -20,23 +20,23 @@ class MultiObjectiveFleetOptimizer:
     def _group_vehicles(self) -> Dict:
         groups = {}
         for _, row in self.data.iterrows():
-            key = (row['Size'], row['Distance_demand'])
+            key = (row['size'], row['Distance_demand'])
             if key not in groups:
                 groups[key] = []
             groups[key].append({
                 'Allocation' : row['Allocation'],
                 'Operating Year': row['Operating Year'],
-                'Size': row['Size'],
+                'Size': row['size'],
                 'Distance_demand': row['Distance_demand'],
-                'demand': row['Demand (km)'],
-                'ID': row['ID'],
-                'vehicle_type': row['Vehicle'],
+                'demand': row['demand'],
+                'ID': row['id'],
+                'vehicle_type': row['vehicle'],
                 'Available Year': row ['Available Year'],
-                'Cost ($)': row['Cost ($)'],
-                'Yearly range (km)': row['Yearly range (km)'],
+                'Cost ($)': row['cost'],
+                'Yearly range (km)': row['yearly_range'],
                 'Distance_vehicle': row['Distance_vehicle'],
-                'Fuel': row['Fuel'],
-                'Consumption (unit_fuel/km)': row['Consumption (unit_fuel/km)'],
+                'Fuel': row['fuel'],
+                'Consumption (unit_fuel/km)': row['consumption_unitfuel_per_km'],
                 'carbon_emissions_per_km': row['carbon_emissions_per_km'],
                 'insurance_cost': row['insurance_cost'],
                 'maintenance_cost': row['maintenance_cost'],
@@ -389,17 +389,17 @@ class MultiObjectiveFleetOptimizer:
                     results.append({
                         "Allocation": Allocation,
                         "Operating Year": vehicle_data["Operating Year"],
-                        "Size":Size,
+                        "size":Size,
                         "Distance_demand":Distance_demand,
-                        "Demand (km)": vehicle_data['demand'],
-                        "ID": vehicle_type,
-                        "Vehicle": vehicle_data['vehicle_type'],
+                        "demand": vehicle_data['demand'],
+                        "id": vehicle_type,
+                        "vehicle": vehicle_data['vehicle_type'],
                         "Available Year":vehicle_data['Available Year'],
-                        "Cost ($)": vehicle_data['Cost ($)'],
-                        "Yearly range (km)": vehicle_data['Yearly range (km)'],
+                        "cost": vehicle_data['Cost ($)'],
+                        "yearly_range": vehicle_data['Yearly range (km)'],
                         "Distance_vehicle": vehicle_data['Distance_vehicle'],
-                        "Fuel": vehicle_data['Fuel'],
-                        "Consumption (unit_fuel/km)": vehicle_data['Consumption (unit_fuel/km)'],
+                        "fuel": vehicle_data['Fuel'],
+                        "consumption_unitfuel_per_km": vehicle_data['Consumption (unit_fuel/km)'],
                         "carbon_emissions_per_km": vehicle_data['carbon_emissions_per_km'],
                         "insurance_cost": vehicle_data['insurance_cost'],
                         "maintenance_cost": vehicle_data['maintenance_cost'],
