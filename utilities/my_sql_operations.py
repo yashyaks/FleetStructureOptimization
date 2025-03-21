@@ -55,3 +55,12 @@ class MySQLOperations:
         cursor.close()
         connection.close()
         return data, columns
+    
+    def table_exists(self, table_name):
+        connection = self.create_connection('fleet-data')
+        cursor = connection.cursor()
+        query = f"SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = '{table_name}');"
+        cursor.execute(query)
+        exists = cursor.fetchone()[0]  # Returns 1 if table exists, 0 otherwise
+        cursor.close()
+        return exists
