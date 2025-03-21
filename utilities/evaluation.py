@@ -4,16 +4,16 @@ class Evaluation:
         pass
 
     def calculate_utilization(self, df):
-        combinations = df.groupby(['Size', 'Distance_demand'])
+        combinations = df.groupby(['size', 'Distance_demand'])
         scores = []
 
         for (size, distance), group in combinations:
             total_vehicles = group['No_of_vehicles'].sum()
             for _, row in group.iterrows():
-                score = (row['Demand (km)'] / total_vehicles) / row['Yearly range (km)'] * 100
+                score = (row['demand'] / total_vehicles) / row['yearly_range'] * 100
                 scores.append(score)
 
-        df['Utilization (%)'] = scores
+        df['Utilization'] = scores
         return df
 
     def calculate_demand_fulfillment(self, num_vehicles: int, max_vehicles: int) -> float:
@@ -35,6 +35,6 @@ class Evaluation:
         """Apply utilization and demand fulfillment to DataFrame"""
         df = self.calculate_utilization(df)
         df['DemandFulfillment'] = df.apply(lambda row: self.calculate_demand_fulfillment(row['No_of_vehicles'], row['Max Vehicles']), axis=1)
-        df['Total_Cost'] = df.apply(lambda row: self.calculate_row_total_cost(row['No_of_vehicles'], row['Operating_Cost'], row['Cost ($)']), axis=1)
-        df['Total_CE'] = df.apply(lambda row: self.calculate_row_total_ce(row['No_of_vehicles'], row['Demand (km)'], row['carbon_emissions_per_km']), axis=1)
+        df['Total_Cost'] = df.apply(lambda row: self.calculate_row_total_cost(row['No_of_vehicles'], row['Operating_Cost'], row['cost']), axis=1)
+        df['Total_CE'] = df.apply(lambda row: self.calculate_row_total_ce(row['No_of_vehicles'], row['demand'], row['carbon_emissions_per_km']), axis=1)
         return df
