@@ -1,6 +1,7 @@
 import mysql.connector
 import os
 from sqlalchemy import create_engine
+import pandas as pd
         
 from dotenv import load_dotenv
 load_dotenv(override=True)
@@ -64,3 +65,26 @@ class MySQLOperations:
         exists = cursor.fetchone()[0]  # Returns 1 if table exists, 0 otherwise
         cursor.close()
         return exists
+    
+    def push_input_data(self, data, table_name):
+        connection_string = os.getenv('INPUT_STRING')
+        engine = self.create_sqlalchemy_engine(connection_string)
+        data.to_sql(table_name, con=engine, if_exists='replace')
+        
+    
+    def push_output_data(self, data, table_name):
+        connection_string = os.getenv('OUTPUT_STRING')
+        engine = self.create_sqlalchemy_engine(connection_string)
+        data.to_sql(table_name, con=engine, if_exists='replace')
+        
+    def fetch_input_data(self, table_name):
+        connection = self.create_connection('input')
+        cursor = connection.cursor()
+        query = f"""SELECT * FROM {table_name};"""
+        cursor.execute(query)
+        data = cursor.fetchall()
+        columns = [desc[0] for desc in cursor.description]
+        df = pd.DataFrame(data, columns=columns)
+        cursor.close()
+        connection.close()
+        return df

@@ -101,9 +101,6 @@ def main():
     result = pd.concat(output_list)
     engine = sqlops.create_sqlalchemy_engine(connection_string)
     
-    result.rename(columns=column_mapping, inplace=True)
+    # result.rename(columns=column_mapping, inplace=True)
     result.to_sql(f'combined_multi_objective_fleet_allocation_eval', con=engine, if_exists='replace') 
     
-
-if __name__ == "__main__":
-    main()
