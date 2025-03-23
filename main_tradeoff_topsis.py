@@ -11,7 +11,8 @@ import pandas as pd
 import os
 from pprint import pprint
 
-def main():
+def main(cost_weight, ce_weight, generations, population_size, prev_years):
+    print(cost_weight, ce_weight, generations, population_size, prev_years)
     va = VehicleAllocation()
     tps = Topsis()
     eval = Evaluation()
@@ -35,7 +36,7 @@ def main():
             vehicles_data, columns = sqlops.fetch_data(query)
             df1 = pd.DataFrame(vehicles_data, columns=columns)
             merged_df = pd.concat([df1, df], ignore_index=True, sort=False)
-            merged_df = merged_df[merged_df['Available Year'] > (year-5)]
+            merged_df = merged_df[merged_df['Available Year'] > (year-prev_years)]
             merged_df.drop('demand', axis=1, inplace=True)
             ## UPDATING VALUES FOR OPERATING COSTS AND DEMAND COLUMNS
             
@@ -66,7 +67,8 @@ def main():
         
         merged_df.loc[merged_df['Available Year'] < year, 'cost'] = 0
         print("Initializing Topsis calculation")
-        tp_df = tps.apply_topsis(year, merged_df)
+        weights = [ce_weight, cost_weight, cost_weight]
+        tp_df = tps.apply_topsis(year, merged_df, weights)
         # tp_df.to_csv(f'data/output/tradeoff/topsis/topsis_output_{year}.csv', index=False)
         print(f"TOPSIS calculation done for year {year}")
            
@@ -75,8 +77,8 @@ def main():
         } 
         tp_df.rename(columns=column_mapping, inplace=True) 
         print(f"Multiobjective Optimization...")
-        mo = MultiObjectiveFleetOptimizer(tp_df)
-        df = mo.get_optimized_results(year)
+        mo = MultiObjectiveFleetOptimizer(tp_df, ce_weight, cost_weight)
+        df = mo.get_optimized_results(year, generations, population_size)
 
         # df.to_csv(f'data/output/tradeoff/topsis/multi_objective_fleet_allocation_{year}.csv', index=False)
         print("Optimization done, output saved to file")

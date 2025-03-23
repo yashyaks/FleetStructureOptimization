@@ -1,4 +1,4 @@
-ID,Fuel,Consumption (unit_fuel/km)
+id,fuel,consumption_unitfuel_per_km
 BEV_S1_2023,Electricity,0.893043
 BEV_S1_2024,Electricity,0.893043
 BEV_S1_2025,Electricity,0.893043

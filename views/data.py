@@ -13,7 +13,7 @@ except Exception as e:
     st.error(f"Error initializing database connection: {e}")
     st.stop()
 
-st.title("Fleet Selection Tool", anchor=False)
+st.title("Fleet Data Management & Update Tool", anchor=False)
 st.markdown("Manage and update your fleet data across different tables.")
 # Remove extra space above the title
 st.markdown(
@@ -41,7 +41,8 @@ with tab1:
     if uploaded_file is not None:
         try:
             df = pd.read_csv(uploaded_file)
-
+            df = df.reset_index(drop=True)  
+            
             if df.empty:
                 st.warning("Uploaded file is empty. Please check your data.")
             else:

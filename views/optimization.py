@@ -73,25 +73,44 @@ with tabs[0]:
         with col3:
             population_size = st.number_input("Population Size", min_value=1, value=100)
         parallel = st.checkbox("Enable Parallel Execution")
+        if objective == "Cost":
+            cost_weight = 1
+            carbon_emissions_weight = 0
+        else:
+            carbon_emissions_weight = 1
+            cost_weight = 0
 
+# params = {
+#         "cost_weight": cost_weight,
+#         "ce_weight": carbon_emissions_weight,
+#         "generations": generations,
+#         "population_size": population_size,
+#         "prev_years": prev_years,
+# }
         
 with tabs[1]:
     param3 = st.text_area("Advanced Parameter")
     
 
-# Run button
+# Initialize session state for output data
+if "df_output" not in st.session_state:
+    st.session_state.df_output = None  # Start as None
+
+# Run Algorithm Button
 if st.button("Run Algorithm"):
     st.markdown("### Running Algorithm...")
-    # gif_base64 = get_flowchart_gif()
-    # st.markdown(
-    #     f'<img src="data:image/gif;base64,{gif_base64}" width="500">',
-    #     unsafe_allow_html=True
-    # )
-    # main()
+    # Run your algorithm
+    # main(cost_weight, carbon_emissions_weight, generations, population_size, prev_years)
+    
+    # Fetch and store data in session state
+    st.session_state.df_output = sqlops.fetch_output_data('combined_multi_objective_fleet_allocation_eval')
+    
     st.success("Algorithm Completed!")
 
-    # Fetching and displaying data
-    years = st.multiselect("Select Years", options=["2023", "2024", "2025"], default=["2023"])
-    if years:
-        df = sqlops.fetch_input_data('cost_profiles')
-        st.dataframe(df)
+# Check if output data exists
+if st.session_state.df_output is not None:
+    year = st.selectbox("Select Year", options=[2023, 2024, 2025], index=0)
+
+    # Filter and display the DataFrame
+    df_filtered = st.session_state.df_output[st.session_state.df_output['Operating Year'] == int(year)]
+    st.dataframe(df_filtered)

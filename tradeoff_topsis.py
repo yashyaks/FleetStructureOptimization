@@ -369,11 +369,11 @@ class MultiObjectiveFleetOptimizer:
         
         return [pair[0] for pair in sorted_pairs]
 
-    def get_optimized_results(self, year) -> pd.DataFrame:
+    def get_optimized_results(self, year, generations, population_size) -> pd.DataFrame:
         results = []
         
         for size_distance in self.vehicles_by_size_distance.keys():
-            best_solution = self.optimize(size_distance)
+            best_solution = self.optimize(size_distance, generations, population_size)
             max_vehicles = self.max_vehicles_by_group[size_distance]
             if best_solution is None:
                 continue

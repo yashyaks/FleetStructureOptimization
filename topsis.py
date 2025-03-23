@@ -45,7 +45,7 @@ class Topsis:
         
         return data
     
-    def apply_topsis(self, year, df):
+    def apply_topsis(self, year, df, weights):
         # if df == None:             
         #     df = pd.read_csv(f'data/output/allocation_output_{year}.csv', index_col=False)
         df.reset_index(drop=True, inplace=True)

@@ -14,6 +14,14 @@ hide_streamlit_style = """
         display: flex;
         align-items: center;
     }
+    [data-testid="stSidebarNavLink"] {
+        font-size: 20px !important;
+        text-align: center;
+    }
+    [data-testid="stIconMaterial"] {
+        font-size: 20px !important;
+        text-align: center;
+    }
 
 </style>
 
@@ -40,5 +48,10 @@ p2 = st.Page(
     title="Optimization", 
     icon=":material/cognition:",
 )
-pg = st.navigation(pages = [p0, p1, p2])
+p3 = st.Page(
+    "views/dashboard.py", 
+    title="Dashboard", 
+    icon=":material/analytics:",
+)
+pg = st.navigation(pages = [p0, p1, p2, p3])
 pg.run()
