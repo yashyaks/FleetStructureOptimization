@@ -6,7 +6,6 @@ hide_streamlit_style = """
     [data-testid="stDecoration"] {background: #FFFFFF;}
     div[data-testid="stSidebarHeader"] > img, div[data-testid="collapsedControl"] > img {
       height: auto;
-      width: 700px;
     }
     
     div[data-testid="stSidebarHeader"], div[data-testid="stSidebarHeader"] > *,

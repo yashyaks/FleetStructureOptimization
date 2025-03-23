@@ -16,6 +16,7 @@ class MySQLOperations:
         self.port = os.getenv('MYSQL_PORT')
         self.user = os.getenv('MYSQL_USER')
         self.password = os.getenv('MYSQL_PASSWORD')
+        self.input_connection_string = os.getenv('INPUT_STRING')
 
     def create_connection(self, database):
         """
@@ -139,7 +140,7 @@ class MySQLOperations:
 
         # Get the existing columns in the table
         db_columns = self.get_table_columns(table_name)
-        df = df[[col for col in df.columns if col in db_columns]]-
+        df = df[[col for col in df.columns if col in db_columns]]
         if df.empty:
             raise ValueError("No matching columns found between CSV and database.")
 
@@ -166,3 +167,20 @@ class MySQLOperations:
         finally:
             cursor.close()
             connection.close()
+            
+    def update_table_data(self, table_name: str, edited_df: pd.DataFrame):
+        """
+        Updates the specified MySQL table with the given edited DataFrame.
+        
+        Parameters:
+        table_name (str): Name of the table to update.
+        edited_df (pd.DataFrame): The updated data to be written to the table.
+        Returns:
+        None
+        """
+        conn = self.create_sqlalchemy_engine(self.input_connection_string)
+        conn.begin()
+        try:
+            edited_df.to_sql(table_name, conn, if_exists='replace', index=False)
+        except Exception as e:
+            raise Exception(f"Database update failed: {e}")
