@@ -1,25 +1,11 @@
 import streamlit as st
 import time
 import pandas as pd
-import base64
 from utilities.my_sql_operations import MySQLOperations
-from main_tradeoff_topsis import main
+from main_tradeoff_topsis import optimization
 
-# Function to fetch data from SQL database
-# def fetch_data(years):
-#     conn = sqlite3.connect("database.db")  # Update with your database connection
-#     query = "SELECT * FROM fleet_data WHERE year IN ({})".format(",".join("?" * len(years)))
-#     df = pd.read_sql_query(query, conn, params=years)
-#     conn.close()
-#     return df
-
-# Function to create custom animation
-# def get_flowchart_gif():
-#     file_path = "flowchart.gif"  # Replace with actual path to your GIF
-#     with open(file_path, "rb") as f:
-#         data = f.read()
-#     return base64.b64encode(data).decode("utf-8")
 sqlops = MySQLOperations()
+
 # Remove extra space above the title
 st.markdown(
     """
@@ -44,14 +30,14 @@ if st.session_state.help_popup:
         st.write("Use the tabs to configure parameters for the algorithm. Adjust sliders and text fields as needed. Click 'Run Algorithm' to execute and display results.")
         if st.button("Close"):
             st.session_state.help_popup = False
-            
+
 # Tabs for parameter selection
 tabs = st.tabs(["Graphical", "Manual Config"])
+
 with tabs[0]:
     # Objective selection
     task_type = st.radio("Select Optimization Type", ["Multiobjective", "Single Objective"], horizontal=True)
 
-    # Tabs for parameter selection
     if task_type == "Multiobjective":
         col1, col2 = st.columns(2)
         with col1:
@@ -73,43 +59,55 @@ with tabs[0]:
         with col3:
             population_size = st.number_input("Population Size", min_value=1, value=100)
         parallel = st.checkbox("Enable Parallel Execution")
-        if objective == "Cost":
-            cost_weight = 1
-            carbon_emissions_weight = 0
-        else:
-            carbon_emissions_weight = 1
-            cost_weight = 0
+        cost_weight, carbon_emissions_weight = (1, 0) if objective == "Cost" else (0, 1)
 
-# params = {
-#         "cost_weight": cost_weight,
-#         "ce_weight": carbon_emissions_weight,
-#         "generations": generations,
-#         "population_size": population_size,
-#         "prev_years": prev_years,
-# }
-        
 with tabs[1]:
     param3 = st.text_area("Advanced Parameter")
-    
 
 # Initialize session state for output data
 if "df_output" not in st.session_state:
-    st.session_state.df_output = None  # Start as None
+    st.session_state.df_output = None
+
+# Function to display loading modal
+@st.dialog("Running Algorithm...", width="small")
+def show_loading():
+    st.image("assets/loading.gif", use_container_width=True)
+
+def run_algorithm():
+    show_loading()  # Open modal with GIF
+    
+    query = """
+        SELECT 
+        MIN(year) AS min_value,
+        MAX(year) AS max_value
+        FROM demand;    
+    """
+    years = sqlops.fetch_data(query)
+    min_year, max_year = years[0][0]
+    st.session_state.min_year = min_year
+    st.session_state.max_year = max_year
+
+    start_time = time.time()  # Start timer
+
+    # Run your algorithm
+    optimization(cost_weight, carbon_emissions_weight, generations, population_size, prev_years, min_year, max_year)
+    time.sleep(20)
+
+    execution_time = time.time() - start_time  # Calculate duration
+
+    st.session_state.df_output = sqlops.fetch_output_data('combined_multi_objective_fleet_allocation_eval')
+
+    st.rerun()  # Close modal after execution
+
+    st.success(f"Algorithm Completed in {execution_time:.2f} seconds!")
 
 # Run Algorithm Button
 if st.button("Run Algorithm"):
-    st.markdown("### Running Algorithm...")
-    # Run your algorithm
-    # main(cost_weight, carbon_emissions_weight, generations, population_size, prev_years)
-    
-    # Fetch and store data in session state
-    st.session_state.df_output = sqlops.fetch_output_data('combined_multi_objective_fleet_allocation_eval')
-    
-    st.success("Algorithm Completed!")
+    run_algorithm()
 
 # Check if output data exists
 if st.session_state.df_output is not None:
-    year = st.selectbox("Select Year", options=[2023, 2024, 2025], index=0)
+    year = st.selectbox("Select Year", options=list(range(st.session_state.min_year, st.session_state.max_year + 1)), index=0)
 
     # Filter and display the DataFrame
     df_filtered = st.session_state.df_output[st.session_state.df_output['Operating Year'] == int(year)]

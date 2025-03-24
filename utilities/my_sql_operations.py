@@ -40,7 +40,7 @@ class MySQLOperations:
         engine = create_engine(connection_string, echo=False)
         return engine
 
-    def fetch_data(self, query):
+    def fetch_data(self,query, database = 'input'):
         """
         Fetch data from the MySQL database
         Args:
@@ -49,7 +49,7 @@ class MySQLOperations:
             list: list of tuples containing the fetched data.
             list: list of column names
         """
-        connection = self.create_connection('fleet-data')
+        connection = self.create_connection(database)
         cursor = connection.cursor()
         cursor.execute(query)
         data = cursor.fetchall()
@@ -59,10 +59,7 @@ class MySQLOperations:
         return data, columns
     
     def table_exists(self, table_name):
-        """
-        Check if a table exists in the 'fleet-data' database.
-        """
-        connection = self.create_connection('fleet-data')
+        connection = self.create_connection('output')
         cursor = connection.cursor()
         query = f"""
             SELECT EXISTS (

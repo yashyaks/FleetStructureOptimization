@@ -359,7 +359,7 @@ st.markdown(
 st.markdown('<hr style="border: 0.5px solid gray;">', unsafe_allow_html=True)
 
 # Load & Center Image Properly
-logo_path = "views/logo.png"  # Ensure this is the correct path
+logo_path = "assets/logo.png"  # Ensure this is the correct path
 
 col1, col2, col3 = st.columns([2, 1, 2])  # Creates 3-column layout
 with col2:
