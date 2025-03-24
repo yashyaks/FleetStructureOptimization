@@ -11,7 +11,7 @@ import pandas as pd
 import os
 from pprint import pprint
 
-def main(cost_weight, ce_weight, generations, population_size, prev_years):
+def optimization(cost_weight, ce_weight, generations, population_size, prev_years, min_year, max_year):
     print(cost_weight, ce_weight, generations, population_size, prev_years)
     va = VehicleAllocation()
     tps = Topsis()
@@ -23,7 +23,7 @@ def main(cost_weight, ce_weight, generations, population_size, prev_years):
     connection_string = os.getenv('OUTPUT_STRING')
     
     output_list = []
-    for year in range(2023, 2039):
+    for year in range(min_year, max_year+1):
         print(f"Starting process for year {year}")
         df = va.allocate_vehicles(year)
         # df.to_csv(f'data/output/tradeoff/topsis/allocation_output_{year}.csv', index=False)
@@ -32,9 +32,10 @@ def main(cost_weight, ce_weight, generations, population_size, prev_years):
             print("Merging with previous year vehicles")
             
             # df1 = pd.read_csv(f"data/output/tradeoff/topsis/multi_objective_fleet_allocation_{(year-1)}.csv")
-            query = f"""SELECT * FROM multi_objective_fleet_allocation_eval_{(year-1)}WHERE `Operating Year` = {year}"""
-            vehicles_data, columns = sqlops.fetch_data(query)
+            query = f"""SELECT * FROM multi_objective_fleet_allocation_eval_{(year-1)} WHERE `Operating Year` = {year-1}"""
+            vehicles_data, columns = sqlops.fetch_data(query, database='output')
             df1 = pd.DataFrame(vehicles_data, columns=columns)
+            df1['Operating Year'] = year
             merged_df = pd.concat([df1, df], ignore_index=True, sort=False)
             merged_df = merged_df[merged_df['Available Year'] > (year-prev_years)]
             merged_df.drop('demand', axis=1, inplace=True)
@@ -69,7 +70,6 @@ def main(cost_weight, ce_weight, generations, population_size, prev_years):
         print("Initializing Topsis calculation")
         weights = [ce_weight, cost_weight, cost_weight]
         tp_df = tps.apply_topsis(year, merged_df, weights)
-        # tp_df.to_csv(f'data/output/tradeoff/topsis/topsis_output_{year}.csv', index=False)
         print(f"TOPSIS calculation done for year {year}")
            
         column_mapping = {

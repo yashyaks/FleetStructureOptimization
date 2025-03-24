@@ -72,10 +72,10 @@ if "df_output" not in st.session_state:
 @st.dialog("Running Algorithm...", width="small")
 def show_loading():
     st.image("assets/loading.gif", use_container_width=True)
-
+    st.write("Usually takes upto 150 secs")
 def run_algorithm():
     show_loading()  # Open modal with GIF
-    
+    st.markdown("### Running Algorithm")
     query = """
         SELECT 
         MIN(year) AS min_value,
@@ -91,7 +91,6 @@ def run_algorithm():
 
     # Run your algorithm
     optimization(cost_weight, carbon_emissions_weight, generations, population_size, prev_years, min_year, max_year)
-    time.sleep(20)
 
     execution_time = time.time() - start_time  # Calculate duration
 
