@@ -19,41 +19,88 @@ st.markdown("""
         .custom-button:hover {background-color: #1565C0;}
     </style>
 """, unsafe_allow_html=True)
+# Custom CSS to improve aesthetics
+st.markdown("""
+    <style>
+        .block-container {padding-top: 2rem !important;}
+        .main-title {text-align: center; font-size: 7rem !important; font-weight: bold;}
+        .sub-text {text-align: center; font-size: 3rem !important;}
+        .button-container {text-align: center;}
+        .custom-button {
+            background-color: #1E88E5;
+            color: white;
+            padding: 12px 24px;
+            font-size: 1.2rem;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+        }
+        .custom-button:hover {background-color: #1565C0;}
+    </style>
+""", unsafe_allow_html=True)
 
 # Get the uploaded image path
-image_path = "https://plus.unsplash.com/premium_photo-1733306679049-88a8bf1c2411?q=80&w=1954&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"  # Make sure the file is in the same directory or use the correct path
+image_path = "https://plus.unsplash.com/premium_photo-1733306679049-88a8bf1c2411?q=80&w=1954&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
 
-# Custom CSS for styling
-st.markdown(f"""
+# YouTube video URL
+video_url = "https://www.youtube-nocookie.com/embed/16AbSxpRFJo?si=jJvUcV684O6nFWmg?autoplay=1&mute=1&loop=1&controls=0"
+
+# Custom CSS for styling with enhanced fade-out animation
+st.markdown("""
     <style>
-        .title-container {{
+        .title-container {
             position: relative;
             width: 100%;
             text-align: center;
-        }}
-        .title-container img {{
+            animation: fadeOut 5s forwards;
+        }
+        .title-container img {
             width: 100%;
             border-radius: 20px;
-        }}
-        .overlay-text {{
+        }
+        .overlay-text {
             position: absolute;
             top: 45%;
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
-        }}
-        .main-title {{
+        }
+        .main-title {
             font-size: 64px !important;
             font-weight: bold;
             margin: 0;
-        }}
-        .sub-text {{
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+        }
+        .sub-text {
             font-size: 32px !important;
             color: white;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
             margin-top: 10px;
-        }}
-
+        }
+        .video-container {
+            width: 100%;
+            margin: 0 auto;
+        }
+        @keyframes fadeOut {
+            0% { 
+                opacity: 1; 
+                visibility: visible;
+                max-height: 1000px; /* Large initial max-height */
+            }
+            90% { 
+                opacity: 1; 
+                visibility: visible;
+                max-height: 1000px;
+            }
+            100% { 
+                opacity: 0; 
+                visibility: hidden;
+                max-height: 0;
+                padding: 0;
+                margin: 0;
+            }
+        }
     </style>
 """, unsafe_allow_html=True)
 
@@ -65,6 +112,20 @@ st.markdown(f"""
             <p class="main-title">🍃CarbonWise🍃</p>
             <p class="sub-text">Optimizing Fleet Operations with AI-Powered Efficiency</p>
         </div>
+    </div>
+""", unsafe_allow_html=True)
+
+# Add YouTube video
+st.markdown(f"""
+    <div class="video-container">
+        <iframe 
+            width="100%" 
+            height="600px" 
+            src="{video_url}" 
+            frameborder="0" 
+            allow="autoplay; encrypted-media" 
+            allowfullscreen
+        ></iframe>
     </div>
 """, unsafe_allow_html=True)
 
