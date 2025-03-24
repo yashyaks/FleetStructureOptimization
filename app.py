@@ -1,6 +1,6 @@
 import streamlit as st
 
-st.set_page_config(page_title="Fleet Selection", page_icon="🚚", layout="wide")
+st.set_page_config(page_title="Fleet Selection", page_icon="🚚", layout="wide", initial_sidebar_state='collapsed')
 hide_streamlit_style = """
 <style>
     [data-testid="stDecoration"] {background: #FFFFFF;}
