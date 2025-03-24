@@ -41,11 +41,30 @@ with tabs[0]:
     if task_type == "Multiobjective":
         col1, col2 = st.columns(2)
         with col1:
-            cost_weight = st.slider("Cost Weight", 0.1, 0.9, 0.5)
-            carbon_emissions_weight = st.slider("Carbon Emissions Weight", 0.1, 0.9, 0.5)
+            # Initialize session state
+            if "cost_weight" not in st.session_state:
+                st.session_state.cost_weight = 0.5
+            if "carbon_emissions_weight" not in st.session_state:
+                st.session_state.carbon_emissions_weight = 1 - st.session_state.cost_weight
+
+            # Function to update cost weight
+            def update_cost():
+                st.session_state.carbon_emissions_weight = 1 - st.session_state.cost_weight
+
+            # Function to update carbon emissions weight
+            def update_carbon():
+                st.session_state.cost_weight = 1 - st.session_state.carbon_emissions_weight
+
+            # Sliders with dynamic updates
+            cost_weight = st.slider("Cost Weight", 0.1, 0.9, key="cost_weight", on_change=update_cost)
+            carbon_emissions_weight = st.slider("Carbon Emissions Weight", 0.1, 0.9, key="carbon_emissions_weight", on_change=update_carbon)
+
+
+            # cost_weight = st.slider("Cost Weight", 0.1, 0.9, 0.5)
+            # carbon_emissions_weight = st.slider("Carbon Emissions Weight", 0.1, 0.9, 0.5)
             parallel = st.checkbox("Enable Parallel Execution")
         with col2:
-            prev_years = st.number_input("Previous Years", min_value=1, value=3)
+            prev_years = st.number_input("Previous Years", min_value=1, value=7)
             generations = st.number_input("Generations", min_value=1, value=50)
             population_size = st.number_input("Population Size", min_value=1, value=100)
             
@@ -67,6 +86,9 @@ with tabs[1]:
 # Initialize session state for output data
 if "df_output" not in st.session_state:
     st.session_state.df_output = None
+if "success_message" not in st.session_state:
+    st.session_state.success_message = None
+
 
 # Function to display loading modal
 @st.dialog("Running Algorithm...", width="small")
@@ -91,10 +113,12 @@ def run_algorithm():
 
     # Run your algorithm
     optimization(cost_weight, carbon_emissions_weight, generations, population_size, prev_years, min_year, max_year)
+    # time.sleep(20)
 
     execution_time = time.time() - start_time  # Calculate duration
 
     st.session_state.df_output = sqlops.fetch_output_data('combined_multi_objective_fleet_allocation_eval')
+    st.session_state.success_message = f"Algorithm Completed in {execution_time:.2f} seconds!"
 
     st.rerun()  # Close modal after execution
 
@@ -103,6 +127,11 @@ def run_algorithm():
 # Run Algorithm Button
 if st.button("Run Algorithm"):
     run_algorithm()
+
+# Display success message after rerun
+if st.session_state.success_message:
+    st.success(st.session_state.success_message)
+    st.session_state.success_message = None  # Reset message after displaying
 
 # Check if output data exists
 if st.session_state.df_output is not None:
