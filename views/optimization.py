@@ -3,6 +3,7 @@ import time
 import pandas as pd
 from utilities.my_sql_operations import MySQLOperations
 from main_tradeoff_topsis import optimization
+from main_tradeoff_topsis_parallelize import parallel_optimization
 
 sqlops = MySQLOperations()
 
@@ -94,7 +95,7 @@ if "success_message" not in st.session_state:
 @st.dialog("Running Algorithm...", width="small")
 def show_loading():
     st.image("assets/loading.gif", use_container_width=True)
-    st.write("Usually takes upto 150 secs")
+
 def run_algorithm():
     show_loading()  # Open modal with GIF
     st.markdown("### Running Algorithm")
@@ -111,9 +112,11 @@ def run_algorithm():
 
     start_time = time.time()  # Start timer
 
-    # Run your algorithm
-    optimization(cost_weight, carbon_emissions_weight, generations, population_size, prev_years, min_year, max_year)
-    # time.sleep(20)
+    # Run appropriate optimization function
+    if parallel:
+        parallel_optimization(cost_weight, carbon_emissions_weight, generations, population_size, prev_years, min_year, max_year)
+    else:
+        optimization(cost_weight, carbon_emissions_weight, generations, population_size, prev_years, min_year, max_year)
 
     execution_time = time.time() - start_time  # Calculate duration
 

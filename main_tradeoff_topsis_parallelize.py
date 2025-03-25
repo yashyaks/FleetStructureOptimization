@@ -11,7 +11,7 @@ import pandas as pd
 import os
 from pprint import pprint
 
-def optimization(cost_weight, ce_weight, generations, population_size, prev_years, min_year, max_year):
+def parallel_optimization(cost_weight, ce_weight, generations, population_size, prev_years, min_year, max_year):
     print(cost_weight, ce_weight, generations, population_size, prev_years)
     va = VehicleAllocation()
     tps = Topsis()
