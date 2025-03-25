@@ -32,14 +32,15 @@ with col2:
 df_filtered = df[df['Operating Year']== int(year)]
 
 # KPI Metrics
-col1, col2, col3, col4 = st.columns(4)
-col1.metric("Total Cost", f"{df_filtered['Total_Cost'].sum():,.2f}", border=True)
-col2.metric("Total Carbon Emissions", f"{df_filtered['Total_CE'].sum():,.2f}", border=True)
+col1, col2 = st.columns(2)
+col1.metric("Total Cost", f"₹ {df_filtered['Total_Cost'].sum():,.2f}", border=True)
+col2.metric("Total Carbon Emissions", f"{df_filtered['Total_CE'].sum():,.2f} kgs of CO2", border=True)
 
 df_grouped = df_filtered.groupby(['size', 'Distance_demand'])['DemandFulfillment'].sum().reset_index()
-col3.metric("Demand Fulfillment", f"{df_grouped['DemandFulfillment'].mean()*100:.2f}%", border=True)
+col1, col2 = st.columns(2)
+col1.metric("Demand Fulfillment", f"{df_grouped['DemandFulfillment'].mean()*100:.2f}%", border=True)
 
-col4.metric("Utilization Percentage", f"{df_filtered['Utilization'].mean():.2f}%", border=True)
+col2.metric("Utilization Percentage", f"{df_filtered['Utilization'].mean():.2f}%", border=True)
 
 
 fuel_demand = df_filtered.groupby("fuel")["demand"].sum().reset_index()
