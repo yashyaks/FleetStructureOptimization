@@ -1,6 +1,6 @@
-from demand import VehicleAllocation
+from algos.demand import VehicleAllocation
 # from topsis import Topsis
-from tradeoff_notopsis import MultiObjectiveFleetOptimizer
+from algos.tradeoff_notopsis import MultiObjectiveFleetOptimizer
 from utilities.evaluation import Evaluation
 from utilities.summary import Summary
 

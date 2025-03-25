@@ -45,13 +45,13 @@ class Topsis:
         
         return data
     
-    def apply_topsis(self, year, df):
+    def apply_topsis(self, year, df, weights):
         # if df == None:             
         #     df = pd.read_csv(f'data/output/allocation_output_{year}.csv', index_col=False)
         df.reset_index(drop=True, inplace=True)
         
         # Get unique combinations of Size and Distance_x
-        combinations = df.groupby(['Size', 'Distance_demand'])
+        combinations = df.groupby(['size', 'Distance_demand'])
 
         # Store results
         results = []
@@ -59,10 +59,10 @@ class Topsis:
         # Perform TOPSIS for each combination
         for (size, distance), group in combinations:
             # Define criteria columns
-            criteria_columns = ['carbon_emissions_per_km','Operating_Cost', 'Cost ($)']
+            criteria_columns = ['carbon_emissions_per_km','Operating_Cost', 'cost']
             
             # Define weights (equal weights in this case)
-            weights = [0.5, 0.5, 0.5]
+            weights = weights
             
             # Define impact directions (both to be minimized)
             impacts = ['-', '-', '-']
@@ -71,8 +71,8 @@ class Topsis:
             result = self.topsis_algo(group, criteria_columns, weights, impacts)
             
             # Add size and distance info to results
-            result['Size'] = size
-            result['Distance'] = distance
+            # result['Size'] = size
+            # result['Distance'] = distance
             
             results.append(result)
 
