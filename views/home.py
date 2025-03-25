@@ -19,25 +19,6 @@ st.markdown("""
         .custom-button:hover {background-color: #1565C0;}
     </style>
 """, unsafe_allow_html=True)
-# Custom CSS to improve aesthetics
-st.markdown("""
-    <style>
-        .block-container {padding-top: 2rem !important;}
-        .main-title {text-align: center; font-size: 7rem !important; font-weight: bold;}
-        .sub-text {text-align: center; font-size: 3rem !important;}
-        .button-container {text-align: center;}
-        .custom-button {
-            background-color: #1E88E5;
-            color: white;
-            padding: 12px 24px;
-            font-size: 1.2rem;
-            border-radius: 5px;
-            border: none;
-            cursor: pointer;
-        }
-        .custom-button:hover {background-color: #1565C0;}
-    </style>
-""", unsafe_allow_html=True)
 
 # Get the uploaded image path
 image_path = "https://plus.unsplash.com/premium_photo-1733306679049-88a8bf1c2411?q=80&w=1954&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
