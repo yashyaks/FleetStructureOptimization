@@ -35,6 +35,7 @@ st.markdown("""
         }
         .title-container img {
             width: 100%;
+            height: 700px;
             border-radius: 20px;
         }
         .overlay-text {
@@ -85,7 +86,7 @@ st.markdown(f"""
     <div class="video-container">
         <iframe 
             width="100%" 
-            height="600px" 
+            height="700px" 
             src="{video_url}" 
             frameborder="0" 
             allow="autoplay; encrypted-media" 
