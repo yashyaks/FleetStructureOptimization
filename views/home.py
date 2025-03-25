@@ -26,14 +26,12 @@ image_path = "https://plus.unsplash.com/premium_photo-1733306679049-88a8bf1c2411
 # YouTube video URL
 video_url = "https://www.youtube-nocookie.com/embed/16AbSxpRFJo?si=jJvUcV684O6nFWmg?autoplay=1&mute=1&loop=1&controls=0"
 
-# Custom CSS for styling with enhanced fade-out animation
 st.markdown("""
     <style>
         .title-container {
             position: relative;
             width: 100%;
             text-align: center;
-            animation: fadeOut 5s forwards;
         }
         .title-container img {
             width: 100%;
@@ -62,25 +60,11 @@ st.markdown("""
         .video-container {
             width: 100%;
             margin: 0 auto;
+            margin-top: 30px;
         }
-        @keyframes fadeOut {
-            0% { 
-                opacity: 1; 
-                visibility: visible;
-                max-height: 1000px; /* Large initial max-height */
-            }
-            90% { 
-                opacity: 1; 
-                visibility: visible;
-                max-height: 1000px;
-            }
-            100% { 
-                opacity: 0; 
-                visibility: hidden;
-                max-height: 0;
-                padding: 0;
-                margin: 0;
-            }
+        .video-container iframe {
+            border-radius: 20px;
+            overflow: hidden;
         }
     </style>
 """, unsafe_allow_html=True)
@@ -109,7 +93,6 @@ st.markdown(f"""
         ></iframe>
     </div>
 """, unsafe_allow_html=True)
-
 
 # About Section with Image and Text in Two Columns
 st.markdown("""
