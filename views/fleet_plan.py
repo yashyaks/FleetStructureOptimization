@@ -19,6 +19,7 @@ st.markdown(
 
 sqlops = MySQLOperations()
 df = sqlops.fetch_output_data('combined_multi_objective_fleet_allocation_eval')
+summary_df = sqlops.fetch_output_data('multiobjective_summary')
 
 connection_string = os.getenv('OUTPUT_STRING')
 
@@ -35,9 +36,11 @@ else:
     
     filtered_plan_df = plan_df[plan_df["Operating Year"] == selected_year]
     df_filtered = df[df["Operating Year"] == selected_year]
-    col1, col2 = st.columns(2)
-    col1.metric("Total Cost of Vehicle Acquisition for the year", f"₹ {df_filtered['Total_Cost'].sum():,.2f}", border=True)
-    col2.metric("Total Carbon Emissions for the year", f"{df_filtered['Total_CE'].sum():,.2f} kgs of CO2", border=True)
+    summary_df_filtered = summary_df[summary_df['Year']== int(selected_year)]
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Total Cost of Vehicle Acquisition for the year", f"₹ {summary_df_filtered['TotalCost'].iloc[0]}", border=True)
+    col2.metric("Total Recievables from vehicle sales", f"₹ 0", border=True)
+    col3.metric("Total Carbon Emissions for the year", f"{summary_df_filtered['TotalCarbonEmissions'].iloc[0]} kgs of CO2", border=True)
 
     st.subheader(f"Generated Buy, Sell, and Use Plan for {selected_year}")
     st.dataframe(filtered_plan_df, use_container_width=True)
