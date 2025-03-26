@@ -33,7 +33,8 @@ if st.session_state.help_popup:
             st.session_state.help_popup = False
 
 # Tabs for parameter selection
-tabs = st.tabs(["Graphical", "Manual Config"])
+# tabs = st.tabs(["Graphical", "Manual Config"])
+tabs = st.tabs(["Graphical"])
 
 with tabs[0]:
     # Objective selection
@@ -81,8 +82,8 @@ with tabs[0]:
         parallel = st.checkbox("Enable Parallel Execution")
         cost_weight, carbon_emissions_weight = (1, 0) if objective == "Cost" else (0, 1)
 
-with tabs[1]:
-    param3 = st.text_area("Advanced Parameter")
+# with tabs[1]:
+#     param3 = st.text_area("Advanced Parameter")
 
 # Initialize session state for output data
 if "df_output" not in st.session_state:

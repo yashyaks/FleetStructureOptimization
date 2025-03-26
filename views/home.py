@@ -24,7 +24,7 @@ st.markdown("""
 image_path = "https://plus.unsplash.com/premium_photo-1733306679049-88a8bf1c2411?q=80&w=1954&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
 
 # YouTube video URL
-video_url = "https://www.youtube-nocookie.com/embed/16AbSxpRFJo?si=jJvUcV684O6nFWmg?autoplay=1&mute=1&loop=1&controls=0"
+video_url = "https://www.youtube-nocookie.com/embed/G6CM3tebVRg?si=WZnEYckRYykOli9T?autoplay=1&mute=0&loop=1&controls=0"
 
 st.markdown("""
     <style>
