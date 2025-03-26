@@ -1,12 +1,12 @@
 import streamlit as st
-from sql_nlp_response import initialize_components, generate_natural_language_response
+from sql_nlp_response import initialize_components, generate_natural_language_response, is_greeting
 
 st.title("🔍 Database Query Chatbot")
 
 # Initialize components
 llm, db = initialize_components()
 
-# Chat UI
+# Chat UI session state
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -21,7 +21,9 @@ if user_input:
     with st.chat_message("user"):
         st.markdown(user_input)
     
+    response = "Hello! How can I assist you today?" if is_greeting(user_input) else generate_natural_language_response(llm, db, user_input)
+    
     with st.chat_message("assistant"):
-        response = generate_natural_language_response(llm, db, user_input)
         st.markdown(response)
-        st.session_state.messages.append({"role": "assistant", "content": response})
+    
+    st.session_state.messages.append({"role": "assistant", "content": response})
