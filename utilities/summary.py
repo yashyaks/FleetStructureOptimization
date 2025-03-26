@@ -6,7 +6,8 @@ class Summary:
     
     def yearly_cost_total(self, df):
         hehe = df['cost'] + df['maintenance_cost'] + df['insurance_cost'] + (df['fuel_costs_per_km'] * (df['demand'] * df['DemandFulfillment']))
-        return round((df['No_of_vehicles'] * hehe).sum(), 0)
+        return round(hehe.sum(), 0)
+        # return round((df['No_of_vehicles'] * hehe).sum(), 0)
         
     def yearly_carbon_emissions_total(self, df):
         return round((df['No_of_vehicles'] * df['carbon_emissions_per_km'] * (df['DemandFulfillment'] * df['demand'])).sum(), 0)
