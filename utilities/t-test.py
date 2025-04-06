@@ -1,16 +1,26 @@
+import os
 import pandas as pd
 from scipy.stats import ttest_ind
+from sqlalchemy import create_engine
 
-# Read data from CSV files
-topsis_df = pd.read_csv('data/output/tradeoff/topsis/multiobjective_summary.csv')
-no_topsis_df = pd.read_csv('data/output/tradeoff/notopsis/multiobjective_summary.csv')
+# Fetch DB_URL from environment variable
+DB_URL = os.getenv("OUTPUT_STRING")
 
-# Merge data on the 'Year' column
-df = pd.merge(topsis_df, no_topsis_df, on='Year', suffixes=('_Topsis', '_NoTopsis'))
+# Create SQLAlchemy engine
+engine = create_engine(DB_URL)
+
+def fetch_data(table_name):
+    """Fetches data from a MySQL table using SQLAlchemy."""
+    query = f"SELECT * FROM {table_name}"
+    return pd.read_sql(query, engine)
+
+# Fetch data from database tables
+topsis_df = fetch_data('topsis_multiobjective_summary')
+no_topsis_df = fetch_data('notopsis_multiobjective_summary')
 
 # Apply t-test
-cost_ttest = ttest_ind(df['TotalCost_Topsis'], df['TotalCost_NoTopsis'])
-ce_ttest = ttest_ind(df['TotalCarbonEmissions_Topsis'], df['TotalCarbonEmissions_NoTopsis'])
+cost_ttest = ttest_ind(topsis_df['TotalCost'], no_topsis_df['TotalCost'])
+ce_ttest = ttest_ind(topsis_df['TotalCarbonEmissions'], no_topsis_df['TotalCarbonEmissions'])
 
 # Print results
 print("T-test for Cost:", cost_ttest)

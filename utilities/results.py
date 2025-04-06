@@ -1,40 +1,70 @@
+import os
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
+from sqlalchemy import create_engine
 
-def plot_fleet_data(csv_no_topsis, csv_topsis, csv_demand):
-    data_no_topsis = pd.read_csv(csv_no_topsis)
-    data_topsis = pd.read_csv(csv_topsis)
-    data_demand = pd.read_csv(csv_demand)
+# Fetch DB_URL from environment variable
+DB_URL = os.getenv("OUTPUT_STRING")
+
+# Create SQLAlchemy engine
+engine = create_engine(DB_URL)
+
+def fetch_data(table_name):
+    """Fetches data from a MySQL table using SQLAlchemy."""
+    query = f"SELECT * FROM {table_name}"
+    return pd.read_sql(query, engine)
+
+def plot_and_analyze_fleet_data(table_no_topsis, table_topsis, table_demand):
+    """
+    Plots cost and emissions comparisons using data from MySQL tables.
+    Also calculates and prints the total sums and percentage differences.
+    """
+    data_no_topsis = fetch_data(table_no_topsis)
+    data_topsis = fetch_data(table_topsis)
     
     years = data_no_topsis['Year']
-    cost_no_topsis = data_no_topsis['TotalCost']
-    emissions_no_topsis = data_no_topsis['TotalCarbonEmissions']
     
-    cost_topsis = data_topsis['TotalCost']
-    emissions_topsis = data_topsis['TotalCarbonEmissions']
+    # Calculate total sums
+    total_emissions_no_topsis = data_no_topsis['TotalCarbonEmissions'].sum()
+    total_emissions_topsis = data_topsis['TotalCarbonEmissions'].sum()
+    total_cost_no_topsis = data_no_topsis['TotalCost'].sum()
+    total_cost_topsis = data_topsis['TotalCost'].sum()
     
-    fig, ax1 = plt.subplots(figsize=(10, 6))
+    # Calculate percentage differences
+    emissions_diff_percent = ((total_emissions_topsis - total_emissions_no_topsis) / total_emissions_no_topsis) * 100
+    cost_diff_percent = ((total_cost_topsis - total_cost_no_topsis) / total_cost_no_topsis) * 100
     
-    ax1.set_xlabel('Year', fontsize=14)
-    ax1.set_ylabel('Total Carbon Emissions (kg Co2)', fontsize=14)
-    ax1.plot(years, emissions_no_topsis, 'o-', label='Emissions (No TOPSIS)', color='red')
-    ax1.plot(years, emissions_topsis, 's-', label='Emissions (With TOPSIS)', color='green')
-    ax1.tick_params(axis='y', labelsize=14)
-    ax1.tick_params(axis='x', labelsize=14)
+    # Print the results
+    print("\n--- SUMMARY OF RESULTS ---")
+    print(f"Total Carbon Emissions (No TOPSIS): {total_emissions_no_topsis:.2f} kg CO2")
+    print(f"Total Carbon Emissions (With TOPSIS): {total_emissions_topsis:.2f} kg CO2")
+    print(f"Percentage Difference in Emissions: {emissions_diff_percent:.2f}%")
+    print(f"\nTotal Cost (No TOPSIS): {total_cost_no_topsis:.2f}")
+    print(f"Total Cost (With TOPSIS): {total_cost_topsis:.2f}")
+    print(f"Percentage Difference in Cost: {cost_diff_percent:.2f}%")
+    print("------------------------\n")
     
-    # ax2 = ax1.twinx()
-    # ax2.set_ylabel('Total Cost', color='tab:red', fontsize=14)
-    # ax2.plot(years, cost_no_topsis, 'o--', label='Cost (No TOPSIS)', color='blue')
-    # ax2.plot(years, cost_topsis, 's--', label='Cost (With TOPSIS)', color='cyan')
-    # ax2.tick_params(axis='y', labelcolor='tab:red', labelsize=14)
-    
-    fig.tight_layout()
-    fig.legend(loc='upper left', bbox_to_anchor=(0.1, 0.9), fontsize=14)
+    # Carbon Emissions Plot
+    plt.figure(figsize=(10, 6))
+    plt.plot(years, data_no_topsis['TotalCarbonEmissions'], 'o-', label='Emissions (No TOPSIS)', color='red')
+    plt.plot(years, data_topsis['TotalCarbonEmissions'], 's-', label='Emissions (With TOPSIS)', color='green')
+    plt.xlabel('Year', fontsize=14)
+    plt.ylabel('Total Carbon Emissions (kg CO2)', fontsize=14)
     plt.title('Comparison of Total Emissions Over Years', fontsize=16)
+    plt.legend(fontsize=12)
+    plt.grid(True)
+    plt.show()
+
+    # Cost Plot
+    plt.figure(figsize=(10, 6))
+    plt.plot(years, data_no_topsis['TotalCost'], 'o-', label='Cost (No TOPSIS)', color='red')
+    plt.plot(years, data_topsis['TotalCost'], 's-', label='Cost (With TOPSIS)', color='green')
+    plt.xlabel('Year', fontsize=14)
+    plt.ylabel('Total Cost', fontsize=14)
+    plt.title('Comparison of Total Cost Over Years', fontsize=16)
+    plt.legend(fontsize=12)
+    plt.grid(True)
     plt.show()
 
 # Example Usage
-plot_fleet_data('data/output/tradeoff/notopsis/multiobjective_summary.csv', 
-                'data/output/tradeoff/topsis/multiobjective_summary.csv', 
-                'data/demand.csv')
+plot_and_analyze_fleet_data('notopsis_multiobjective_summary', 'topsis_multiobjective_summary', 'demand')
