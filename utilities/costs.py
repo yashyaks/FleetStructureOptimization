@@ -210,7 +210,7 @@ class Costs:
         merged_df = pd.merge(eoy_df, insurance_cost_df, left_on='End_of_year', right_on='end_of_year', how='left')
         
         merged_df['insurance_cost'] = (
-            ((merged_df['insurance_cost_percent']/100) * merged_df['cost']) 
+            ((merged_df['insurance_cost_percent']/100) * merged_df['a_cost']) 
         )
         return merged_df['insurance_cost']
             
@@ -237,7 +237,7 @@ class Costs:
             merged_df = pd.merge(eoy_df, maintenance_cost_df, left_on='End_of_year', right_on='end_of_year', how='left')
             
             merged_df['maintenance_cost'] = (
-                ((merged_df['maintenance_cost_percent']/100) * merged_df['cost'])
+                ((merged_df['maintenance_cost_percent']/100) * merged_df['a_cost'])
             )
             return merged_df['maintenance_cost']
           

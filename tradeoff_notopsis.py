@@ -20,23 +20,24 @@ class MultiObjectiveFleetOptimizer:
     def _group_vehicles(self) -> Dict:
         groups = {}
         for _, row in self.data.iterrows():
-            key = (row['Size'], row['Distance_demand'])
+            key = (row['size'], row['Distance_demand'])
             if key not in groups:
                 groups[key] = []
             groups[key].append({
                 'Allocation' : row['Allocation'],
                 'Operating Year': row['Operating Year'],
-                'Size': row['Size'],
+                'Size': row['size'],
                 'Distance_demand': row['Distance_demand'],
-                'demand': row['Demand (km)'],
-                'ID': row['ID'],
-                'vehicle_type': row['Vehicle'],
+                'demand': row['demand'],
+                'ID': row['id'],
+                'vehicle_type': row['vehicle'],
                 'Available Year': row ['Available Year'],
-                'Cost ($)': row['Cost ($)'],
-                'Yearly range (km)': row['Yearly range (km)'],
+                'Cost ($)': row['cost'],
+                'a_cost': row['a_cost'],
+                'Yearly range (km)': row['yearly_range'],
                 'Distance_vehicle': row['Distance_vehicle'],
-                'Fuel': row['Fuel'],
-                'Consumption (unit_fuel/km)': row['Consumption (unit_fuel/km)'],
+                'Fuel': row['fuel'],
+                'Consumption (unit_fuel/km)': row['consumption_unitfuel_per_km'],
                 'carbon_emissions_per_km': row['carbon_emissions_per_km'],
                 'insurance_cost': row['insurance_cost'],
                 'maintenance_cost': row['maintenance_cost'],
@@ -99,8 +100,7 @@ class MultiObjectiveFleetOptimizer:
             remaining_vehicles = max_vehicles
             
             while remaining_vehicles > 0:
-                selected_idx = np.random.choice(range(len(vehicle_types))
-                                                )
+                selected_idx = np.random.choice(range(len(vehicle_types)))
                 selected_type = vehicle_types[selected_idx]
                 
                 if solution[selected_type] < remaining_vehicles and random.random() < 0.7:
@@ -201,7 +201,7 @@ class MultiObjectiveFleetOptimizer:
         multi_objective_score = (
             self.cost_weight * normalized_cost + 
             self.emission_weight * normalized_emissions
-            # + 1 * (weighted_topsis / sum(solution.values()) if sum(solution.values()) > 0 else 0)
+            # 1 * (weighted_topsis / sum(solution.values()) if sum(solution.values()) > 0 else 0)
         )
         
         return multi_objective_score
@@ -260,7 +260,6 @@ class MultiObjectiveFleetOptimizer:
             
             ranks.extend(pareto_front)
             rank += 1
-        
         return ranks
 
     def non_dominated_sorting(self, population: List[Dict], size_distance: Tuple):
@@ -276,7 +275,6 @@ class MultiObjectiveFleetOptimizer:
         for gen in range(generations):
             offspring = []
             while len(offspring) < population_size:
-
                 parent1 = self.tournament_selection(population, size_distance)
                 parent2 = self.tournament_selection(population, size_distance)
                 
@@ -312,9 +310,9 @@ class MultiObjectiveFleetOptimizer:
                 fitness = self.fitness_function(solution, size_distance)
                 if fitness > best_fitness:
                     best_solution = solution
-                    best_fitness = fitness     
+                    best_fitness = fitness
         return best_solution
-
+    
     def tournament_selection(self, population: List[Dict], size_distance: Tuple, tournament_size: int = 3) -> Dict:
         """Tournament selection based on fitness"""
         tournament = random.sample(population, min(tournament_size, len(population)))
@@ -372,13 +370,12 @@ class MultiObjectiveFleetOptimizer:
         
         return [pair[0] for pair in sorted_pairs]
 
-    def get_optimized_results(self, year) -> pd.DataFrame:
+    def get_optimized_results(self, year, generations, population_size) -> pd.DataFrame:
         results = []
         
         for size_distance in self.vehicles_by_size_distance.keys():
-            best_solution = self.optimize(size_distance)
+            best_solution = self.optimize(size_distance, generations, population_size)
             max_vehicles = self.max_vehicles_by_group[size_distance]
-            
             if best_solution is None:
                 continue
             pprint(best_solution)
@@ -393,17 +390,18 @@ class MultiObjectiveFleetOptimizer:
                     results.append({
                         "Allocation": Allocation,
                         "Operating Year": vehicle_data["Operating Year"],
-                        "Size":Size,
+                        "size":Size,
                         "Distance_demand":Distance_demand,
-                        "Demand (km)": vehicle_data['demand'],
-                        "ID": vehicle_type,
-                        "Vehicle": vehicle_data['vehicle_type'],
+                        "demand": vehicle_data['demand'],
+                        "id": vehicle_type,
+                        "vehicle": vehicle_data['vehicle_type'],
                         "Available Year":vehicle_data['Available Year'],
-                        "Cost ($)": vehicle_data['Cost ($)'],
-                        "Yearly range (km)": vehicle_data['Yearly range (km)'],
+                        "cost": vehicle_data['Cost ($)'],
+                        "a_cost": vehicle_data['a_cost'],
+                        "yearly_range": vehicle_data['Yearly range (km)'],
                         "Distance_vehicle": vehicle_data['Distance_vehicle'],
-                        "Fuel": vehicle_data['Fuel'],
-                        "Consumption (unit_fuel/km)": vehicle_data['Consumption (unit_fuel/km)'],
+                        "fuel": vehicle_data['Fuel'],
+                        "consumption_unitfuel_per_km": vehicle_data['Consumption (unit_fuel/km)'],
                         "carbon_emissions_per_km": vehicle_data['carbon_emissions_per_km'],
                         "insurance_cost": vehicle_data['insurance_cost'],
                         "maintenance_cost": vehicle_data['maintenance_cost'],
@@ -414,6 +412,7 @@ class MultiObjectiveFleetOptimizer:
                         "No_of_vehicles": num_vehicles,
                         "Max Vehicles": max_vehicles,               
                     })
+                    
         
         # f_df = pd.DataFrame({
         #     "Population": list(range(1, len(fitness_scores) + 1)),
