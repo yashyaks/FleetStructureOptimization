@@ -67,4 +67,4 @@ def plot_and_analyze_fleet_data(table_no_topsis, table_topsis, table_demand):
     plt.show()
 
 # Example Usage
-plot_and_analyze_fleet_data('notopsis_multiobjective_summary', 'topsis_multiobjective_summary', 'demand')
+plot_and_analyze_fleet_data('notopsis_multiobjective_summary_avg', 'topsis_multiobjective_summary_avg', 'demand')
