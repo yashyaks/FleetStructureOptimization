@@ -48,6 +48,9 @@ class VehicleAllocation:
         df = df.rename(columns={'year_x': 'Operating Year', 'year_y': 'Available Year', 'distance_x': 'Distance_demand', 'distance_y': 'Distance_vehicle'})
         
         df = pd.merge(df, vehicle_fuels_df, how='left', left_on='id', right_on='id')
+        
+        df['a_cost'] = df['cost']
+        
         ce = CarbonEmissions()
         df['carbon_emissions_per_km'] = ce.per_km_carbon_emmissions_per_vehicle(df, year)
         costs = Costs()

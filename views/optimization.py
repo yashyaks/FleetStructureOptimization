@@ -3,6 +3,7 @@ import time
 import pandas as pd
 from utilities.my_sql_operations import MySQLOperations
 from main_tradeoff_topsis import optimization
+from main_tradeoff_topsis_parallelize import parallel_optimization
 
 sqlops = MySQLOperations()
 
@@ -32,7 +33,8 @@ if st.session_state.help_popup:
             st.session_state.help_popup = False
 
 # Tabs for parameter selection
-tabs = st.tabs(["Graphical", "Manual Config"])
+# tabs = st.tabs(["Graphical", "Manual Config"])
+tabs = st.tabs(["Graphical"])
 
 with tabs[0]:
     # Objective selection
@@ -80,8 +82,8 @@ with tabs[0]:
         parallel = st.checkbox("Enable Parallel Execution")
         cost_weight, carbon_emissions_weight = (1, 0) if objective == "Cost" else (0, 1)
 
-with tabs[1]:
-    param3 = st.text_area("Advanced Parameter")
+# with tabs[1]:
+#     param3 = st.text_area("Advanced Parameter")
 
 # Initialize session state for output data
 if "df_output" not in st.session_state:
@@ -94,7 +96,7 @@ if "success_message" not in st.session_state:
 @st.dialog("Running Algorithm...", width="small")
 def show_loading():
     st.image("assets/loading.gif", use_container_width=True)
-    st.write("Usually takes upto 150 secs")
+
 def run_algorithm():
     show_loading()  # Open modal with GIF
     st.markdown("### Running Algorithm")
@@ -111,9 +113,11 @@ def run_algorithm():
 
     start_time = time.time()  # Start timer
 
-    # Run your algorithm
-    optimization(cost_weight, carbon_emissions_weight, generations, population_size, prev_years, min_year, max_year)
-    # time.sleep(20)
+    # Run appropriate optimization function
+    if parallel:
+        parallel_optimization(cost_weight, carbon_emissions_weight, generations, population_size, prev_years, min_year, max_year)
+    else:
+        optimization(cost_weight, carbon_emissions_weight, generations, population_size, prev_years, min_year, max_year)
 
     execution_time = time.time() - start_time  # Calculate duration
 

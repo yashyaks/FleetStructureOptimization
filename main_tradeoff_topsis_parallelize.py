@@ -1,6 +1,6 @@
 from demand import VehicleAllocation
 from topsis import Topsis
-from tradeoff_topsis import MultiObjectiveFleetOptimizer
+from tradeoff_topsis_parallelize import MultiObjectiveFleetOptimizer
 from utilities.evaluation import Evaluation
 from utilities.summary import Summary
 from utilities.costs import Costs
@@ -11,7 +11,7 @@ import pandas as pd
 import os
 from pprint import pprint
 
-def optimization(cost_weight, ce_weight, generations, population_size, prev_years, min_year, max_year):
+def parallel_optimization(cost_weight, ce_weight, generations, population_size, prev_years, min_year, max_year):
     print(cost_weight, ce_weight, generations, population_size, prev_years)
     va = VehicleAllocation()
     tps = Topsis()
@@ -65,11 +65,11 @@ def optimization(cost_weight, ce_weight, generations, population_size, prev_year
                   
         else:
             merged_df = df.copy()
-        
-
+            
         merged_df['fuel_costs_per_km'] = costs.per_km_fuel_cost_per_vehicle(merged_df, year)
         merged_df['maintenance_cost'] = costs.yearly_maintenance_cost_per_vehicle(merged_df)
         merged_df['insurance_cost'] = costs.yearly_insurance_cost_per_vehicle(merged_df)
+        
         
         merged_df.loc[merged_df['Available Year'] < year, 'cost'] = 0
         print("Initializing Topsis calculation")
@@ -102,7 +102,7 @@ def optimization(cost_weight, ce_weight, generations, population_size, prev_year
         
         engine = sqlops.create_sqlalchemy_engine(connection_string)
         df.to_sql(f'multi_objective_fleet_allocation_eval_{year}', con=engine, if_exists='replace') 
-        summary_df.to_sql('topsis_multiobjective_summary', con=engine, if_exists='replace')
+        summary_df.to_sql('multiobjective_summary_parallel', con=engine, if_exists='replace')
         print()
     
     result = pd.concat(output_list)

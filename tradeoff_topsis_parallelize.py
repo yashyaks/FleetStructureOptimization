@@ -3,6 +3,7 @@ import numpy as np
 import math
 import random 
 from typing import List, Dict, Tuple
+import multiprocessing as mp
 from pprint import pprint
 
 class MultiObjectiveFleetOptimizer:
@@ -369,56 +370,65 @@ class MultiObjectiveFleetOptimizer:
         sorted_pairs = sorted(solution_distances, key=lambda x: x[1], reverse=True)
         
         return [pair[0] for pair in sorted_pairs]
-
-    def get_optimized_results(self, year, generations, population_size) -> pd.DataFrame:
+    
+        # New method: Process a single size_distance group
+    def _process_size_distance(self, size_distance: Tuple, generations, population_size) -> List[Dict]:
         results = []
+        best_solution = self.optimize(size_distance, generations, population_size)
+        max_vehicles = self.max_vehicles_by_group[size_distance]
         
-        for size_distance in self.vehicles_by_size_distance.keys():
-            best_solution = self.optimize(size_distance, generations, population_size)
-            max_vehicles = self.max_vehicles_by_group[size_distance]
-            if best_solution is None:
-                continue
-            pprint(best_solution)
-            for vehicle_type, num_vehicles in best_solution.items():
-                if num_vehicles > 0:
-                    vehicle_data = next(v for v in self.vehicles_by_size_distance[size_distance] if v['ID'] == vehicle_type)
-                    total_cost = self.calculate_total_cost(num_vehicles, vehicle_data)
-                    total_emissions = self.calculate_total_emissions(num_vehicles, vehicle_data)
-                    Allocation = vehicle_data.get('Allocation')
-                    Size = vehicle_data.get('Size')
-                    Distance_demand = vehicle_data.get('Distance_demand')
-                    results.append({
-                        "Allocation": Allocation,
-                        "Operating Year": vehicle_data["Operating Year"],
-                        "size":Size,
-                        "Distance_demand":Distance_demand,
-                        "demand": vehicle_data['demand'],
-                        "id": vehicle_type,
-                        "vehicle": vehicle_data['vehicle_type'],
-                        "Available Year":vehicle_data['Available Year'],
-                        "a_cost": vehicle_data['a_cost'],
-                        "cost": vehicle_data['Cost ($)'],
-                        "yearly_range": vehicle_data['Yearly range (km)'],
-                        "Distance_vehicle": vehicle_data['Distance_vehicle'],
-                        "fuel": vehicle_data['Fuel'],
-                        "consumption_unitfuel_per_km": vehicle_data['Consumption (unit_fuel/km)'],
-                        "carbon_emissions_per_km": vehicle_data['carbon_emissions_per_km'],
-                        "insurance_cost": vehicle_data['insurance_cost'],
-                        "maintenance_cost": vehicle_data['maintenance_cost'],
-                        "fuel_costs_per_km": vehicle_data['fuel_costs_per_km'],
-                        "Operating_Cost": vehicle_data['Operating_Cost'],
-                        'Topsis_Score': vehicle_data['Topsis_Score'],
-                        'Rank': vehicle_data['Rank'],
-                        "No_of_vehicles": num_vehicles,
-                        "Max Vehicles": max_vehicles,               
-                    })
-                    
+        if best_solution is None:
+            return results
+            
+        print(f"Processed {size_distance}: {best_solution}")
         
-        # f_df = pd.DataFrame({
-        #     "Population": list(range(1, len(fitness_scores) + 1)),
-        #     "Fitness Score": fitness_scores
-        # })
-        # f_df.to_csv(f"fitness_scores_{year}.csv", index=False)
+        for vehicle_type, num_vehicles in best_solution.items():
+            if num_vehicles > 0:
+                vehicle_data = next(v for v in self.vehicles_by_size_distance[size_distance] if v['ID'] == vehicle_type)
+                total_cost = self.calculate_total_cost(num_vehicles, vehicle_data)
+                total_emissions = self.calculate_total_emissions(num_vehicles, vehicle_data)
+                Allocation = vehicle_data.get('Allocation')
+                Size = vehicle_data.get('Size')
+                Distance_demand = vehicle_data.get('Distance_demand')
+                results.append({
+                    "Allocation": Allocation,
+                    "Operating Year": vehicle_data["Operating Year"],
+                    "size": Size,
+                    "Distance_demand": Distance_demand,
+                    "demand": vehicle_data['demand'],
+                    "id": vehicle_type,
+                    "vehicle": vehicle_data['vehicle_type'],
+                    "Available Year": vehicle_data['Available Year'],
+                    "cost": vehicle_data['Cost ($)'],
+                    "a_cost": vehicle_data['a_cost'],
+                    "yearly_range": vehicle_data['Yearly range (km)'],
+                    "Distance_vehicle": vehicle_data['Distance_vehicle'],
+                    "fuel": vehicle_data['Fuel'],
+                    "consumption_unitfuel_per_km": vehicle_data['Consumption (unit_fuel/km)'],
+                    "carbon_emissions_per_km": vehicle_data['carbon_emissions_per_km'],
+                    "insurance_cost": vehicle_data['insurance_cost'],
+                    "maintenance_cost": vehicle_data['maintenance_cost'],
+                    "fuel_costs_per_km": vehicle_data['fuel_costs_per_km'],
+                    "Operating_Cost": vehicle_data['Operating_Cost'],
+                    'Topsis_Score': vehicle_data['Topsis_Score'],
+                    'Rank': vehicle_data['Rank'],
+                    "No_of_vehicles": num_vehicles,
+                    "Max Vehicles": max_vehicles,               
+                })
+        
+        return results
 
-        df = pd.DataFrame(results)
+    def get_optimized_results(self, year, generations: int = 100, population_size: int = 50) -> pd.DataFrame:
+        all_results = []
+        
+        # Prepare input as tuples (size_distance, generations, population_size)
+        input_args = [(size_distance, generations, population_size) for size_distance in self.vehicles_by_size_distance.keys()]
+        
+        with mp.Pool(processes=mp.cpu_count()) as pool:
+            all_results = pool.starmap(self._process_size_distance, input_args)
+
+        # Flatten the list of lists
+        flattened_results = [item for sublist in all_results for item in sublist]
+
+        df = pd.DataFrame(flattened_results)
         return df

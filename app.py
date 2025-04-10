@@ -48,9 +48,20 @@ p2 = st.Page(
     icon=":material/cognition:",
 )
 p3 = st.Page(
+    "views/fleet_plan.py", 
+    title="Fleet Plan", 
+    icon=":material/delivery_truck_bolt:",
+)
+p4 = st.Page(
     "views/dashboard.py", 
     title="Dashboard", 
     icon=":material/analytics:",
 )
-pg = st.navigation(pages = [p0, p1, p2, p3])
+p5 = st.Page(
+    "views/askgemini.py", 
+    title="ChatBot", 
+    icon=":material/forum:",
+)
+
+pg = st.navigation(pages = [p0, p1, p2, p3, p4, p5])
 pg.run()
