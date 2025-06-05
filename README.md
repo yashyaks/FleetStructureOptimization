@@ -1,12 +1,10 @@
-# 🚛 Multi-Criteria Fleet Optimization
+# Multi-Criteria Fleet Optimization
 
 **Minimizing Cost and Carbon Emissions While Meeting Demand**  
-_A project by Hiya Jain, Yash Thakar and Shruti Jain
-**Guide:** Prof. Kanchan Dabre  
-
+A project by Hiya Jain, Yash Thakar, Shruti Jain, Kanchan Dabre
 ---
 
-## 📌 Introduction
+## Introduction
 
 Large commercial fleets used for logistics and deliveries contribute significantly to global greenhouse gas (GHG) emissions. This project presents a decision-making framework to support optimal **fleet decarbonization** through **multi-objective optimization**, balancing:
 
@@ -16,7 +14,7 @@ Large commercial fleets used for logistics and deliveries contribute significant
 
 ---
 
-## 🎯 Problem Statement
+## Problem Statement
 
 **Objective:**  
 Design a fleet plan that:
@@ -27,9 +25,9 @@ Design a fleet plan that:
 
 ---
 
-## 🛠️ Methodology
+## Methodology
 
-### 🚀 Multi-Criteria Optimization Framework
+### Multi-Criteria Optimization Framework
 
 1. **Vehicle Data Collection** – Extract key attributes (size, fuel, cost, emissions)  
 2. **Vehicle Mapping** – Identify feasible vehicles per demand cluster  
@@ -38,7 +36,7 @@ Design a fleet plan that:
 5. **Iterative Planning** – Carry forward fleet to future years, re-evaluating based on need  
 6. **Final Output** – Determine optimal fleet combination per year  
 
-### 💡 Key Enhancements
+### Key Enhancements
 
 - TOPSIS used to **bias population initialization** in NSGA-II  
 - Cost and carbon treated as **negative criteria**  
@@ -46,13 +44,13 @@ Design a fleet plan that:
 
 ---
 
-## 🧠 Architecture
+## Architecture
 
 ![Architecture Diagram](images/architecture.png)
 
 ---
 
-## 🔄 Parallelization
+## Parallelization
 
 The algorithm is optimized using **Python's multiprocessing** module:
 
@@ -63,19 +61,19 @@ The algorithm is optimized using **Python's multiprocessing** module:
 
 ---
 
-## 🧪 Hypothesis Testing & Results
+## Hypothesis Testing & Results
 
-### ✅ Cost Minimization (50 Runs)
+### Cost Minimization (50 Runs)
 - **p-value = 0.00248**  
 - **Null Hypothesis Rejected**  
 - TOPSIS-NSGA-II performs significantly better  
 
-### ✅ Emissions Minimization (50 Runs)
+### Emissions Minimization (50 Runs)
 - **p-value = 0.00303**  
 - **Null Hypothesis Rejected**  
 - TOPSIS-NSGA-II again outperforms standard NSGA-II  
 
-### ⚖️ Parallel vs Sequential
+### Parallel vs Sequential
 - **Cost p-value = 0.0969**  
 - **Emissions p-value = 0.5106**  
 - **Null Hypothesis Accepted**: Parallel execution improves performance without loss in accuracy  
