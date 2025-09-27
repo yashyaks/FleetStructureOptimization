@@ -184,7 +184,7 @@ class MultiObjectiveFleetOptimizer:
                 total_cost += self.calculate_total_cost(num_vehicles, vehicle)
                 total_emissions += self.calculate_total_emissions(num_vehicles, vehicle)
                 total_capacity += num_vehicles * vehicle['Yearly range (km)']
-                weighted_topsis += num_vehicles * vehicle['Rank']
+                weighted_topsis += num_vehicles * vehicle['Topsis_Score']
         
         demand_penalty = max(0, demand - total_capacity) * 1000
         if demand_penalty > 0:  # Solution doesn't meet demand

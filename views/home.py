@@ -377,7 +377,7 @@ st.markdown(
     """
     <h1 style="text-align: center; font-size: 32px">📞 Get in Touch</h1>
     <p style="text-align: center;">Ready to optimize your fleet? Contact us today!</p>
-    <p style="text-align: center;"><b>📧 Email:</b> contact@carbonwise.com  |  <b>📍 Location:</b> San Francisco, CA</p>
+    <p style="text-align: center;"><b>📧 Email:</b> contact@carbonwise.com  |  <b>📍 Location:</b> Mumbai, India</p>
     """,
     unsafe_allow_html=True
 )

@@ -48,7 +48,7 @@ labels = ['Sequential', 'Parallel']
 avg_times = [sequential_avg, parallel_avg]
 
 plt.figure(figsize=(8, 5))
-bars = plt.bar(labels, avg_times, color=['skyblue', 'lightgreen'])
+bars = plt.bar(labels, avg_times, color=['red', 'green'])
 plt.ylabel('Average Execution Time (s)')
 plt.title('Average Execution Time Comparison (50 Runs)')
 plt.ylim(0, max(avg_times) + 20)

@@ -1,5 +1,5 @@
 import pandas as pd
-from main_tradeoff_topsis_parallelize import parallel_optimization
+from main_tradeoff_topsis import optimization
 from utilities.my_sql_operations import MySQLOperations
 import os
 import time
@@ -22,7 +22,7 @@ def run_multiple_optimizations(n_runs=50):
     for run in range(n_runs):
         print(f"\n🚀 Starting run {run+1}/{n_runs}")
         start_time = time.time()
-        parallel_optimization(cost_weight, carbon_emissions_weight, generations, population_size, prev_years, min_year, max_year)
+        optimization(cost_weight, carbon_emissions_weight, generations, population_size, prev_years, min_year, max_year)
         end_time = time.time()
 
         duration = end_time - start_time
@@ -47,8 +47,8 @@ def run_multiple_optimizations(n_runs=50):
 
     # Store run time data
     run_times_df = pd.DataFrame(run_times)
-    run_times_df.to_sql('parallel_topsis_run_times', con=engine, if_exists='replace', index=False)
-    print("\n⏱️ Execution times stored in SQL table: `parallel_topsis_run_times`")
+    run_times_df.to_sql('topsis_run_times', con=engine, if_exists='replace', index=False)
+    print("\n⏱️ Execution times stored in SQL table: `topsis_run_times`")
 
 if __name__ == "__main__":
     run_multiple_optimizations()

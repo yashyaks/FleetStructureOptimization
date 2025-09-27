@@ -2,6 +2,9 @@ import os
 import pandas as pd
 from scipy.stats import ttest_ind
 from sqlalchemy import create_engine
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Fetch DB_URL from environment variable
 DB_URL = os.getenv("OUTPUT_STRING")
@@ -16,7 +19,7 @@ def fetch_data(table_name):
 
 # Fetch data from database tables
 topsis_df = fetch_data('topsis_multiobjective_summary_avg')
-no_topsis_df = fetch_data('notopsis_multiobjective_summary_avg')
+no_topsis_df = fetch_data('parallel_topsis_multiobjective_summary_avg')
 
 # Apply t-test
 cost_ttest = ttest_ind(topsis_df['TotalCost'], no_topsis_df['TotalCost'])
