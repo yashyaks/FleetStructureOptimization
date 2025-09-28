@@ -8,6 +8,8 @@ def run_multiple_optimizations(n_runs=50):
     cost_weight, carbon_emissions_weight = 0.5, 0.5
     generations, population_size = 50, 100
     prev_years, min_year, max_year = 7, 2023, 2038
+    
+    table_prefix = "topsis"
 
     sqlops = MySQLOperations()
     connection_string = os.getenv('OUTPUT_STRING')
@@ -32,7 +34,7 @@ def run_multiple_optimizations(n_runs=50):
         run_times.append({'Run': run + 1, 'ExecutionTimeSeconds': round(duration, 2)})
 
         # Fetch the summary table from SQL after each run
-        summary_df = pd.read_sql('topsis_multiobjective_summary', con=engine)
+        summary_df = pd.read_sql(f'{table_prefix}_multiobjective_summary', con=engine)
 
         # Add a run index to track runs
         summary_df['run'] = run + 1
@@ -42,13 +44,13 @@ def run_multiple_optimizations(n_runs=50):
     mean_df = all_runs_df.groupby('Year')[['TotalCost', 'TotalCarbonEmissions']].mean().reset_index()
 
     # Store averaged results
-    mean_df.to_sql('topsis_multiobjective_summary_avg', con=engine, if_exists='replace', index=False)
-    print("\n📊 Averaged results stored in SQL table: `topsis_multiobjective_summary_avg`")
+    mean_df.to_sql(f'{table_prefix}_multiobjective_summary_avg', con=engine, if_exists='replace', index=False)
+    print(f"\n📊 Averaged results stored in SQL table: `{table_prefix}_multiobjective_summary_avg`")
 
     # Store run time data
     run_times_df = pd.DataFrame(run_times)
-    run_times_df.to_sql('topsis_run_times', con=engine, if_exists='replace', index=False)
-    print("\n⏱️ Execution times stored in SQL table: `topsis_run_times`")
+    run_times_df.to_sql(f'{table_prefix}_run_times', con=engine, if_exists='replace', index=False)
+    print(f"\n⏱️ Execution times stored in SQL table: `{table_prefix}_run_times`")
 
 if __name__ == "__main__":
     run_multiple_optimizations()
