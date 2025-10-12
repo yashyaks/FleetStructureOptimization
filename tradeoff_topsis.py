@@ -16,7 +16,57 @@ class MultiObjectiveFleetOptimizer:
         total_weight = emission_weight + cost_weight
         self.emission_weight = emission_weight / total_weight
         self.cost_weight = cost_weight / total_weight
-    
+        
+    def evaluate_population_metrics(self, population: List[Dict], size_distance: Tuple, true_pf_points: List[np.ndarray] = None):
+        """
+        Computes Hypervolume, Spacing, and Generational Distance for a given population.
+        If true_pf_points is not provided, it uses the current Pareto front as reference.
+        """
+        # ---- Step 1: Convert population -> objective points ----
+        points = []
+        for sol in population:
+            if self.is_valid_solution(sol, size_distance):
+                pts = self._solution_to_point(sol, size_distance)
+                points.append(pts)
+
+        if not points:
+            return {"hypervolume": None, "spacing": None, "gd": None}
+
+        # ---- Step 2: Define reference point for HV ----
+        costs = [p[0] for p in points]
+        emissions = [p[1] for p in points]
+        ref_point = (max(costs) * 1.1, max(emissions) * 1.1)
+
+        # ---- Step 3: Compute Hypervolume & Spacing ----
+        hv = hypervolume(points, ref_point)
+        sp = spacing(points)
+
+        # ---- Step 4: Generational Distance (optional) ----
+        if true_pf_points is None:
+            # Auto-derive Pareto front from same population
+            ranks = self.pareto_rank(population, size_distance)
+            pareto_solutions = [sol for sol, r in ranks if r == 0]
+            true_pf_points = [self._solution_to_point(sol, size_distance) for sol in pareto_solutions]
+
+        gd = generational_distance(points, true_pf_points)
+
+        return {"hypervolume": hv, "spacing": sp, "gd": gd}
+
+    def _solution_to_point(self, solution: Dict[str,int], size_distance: Tuple) -> np.ndarray:
+        vehicles = self.vehicles_by_size_distance[size_distance]
+        vehicle_dict = {v['ID']: v for v in vehicles}
+
+        total_cost = 0.0
+        total_emissions = 0.0
+
+        for vid, n in solution.items():
+            if n > 0:
+                v = vehicle_dict[vid]
+                total_cost += self.calculate_total_cost(n, v)
+                total_emissions += self.calculate_total_emissions(n, v)
+
+        return np.array([float(total_cost), float(total_emissions)])
+
     def _group_vehicles(self) -> Dict:
         groups = {}
         for _, row in self.data.iterrows():
@@ -422,3 +472,57 @@ class MultiObjectiveFleetOptimizer:
 
         df = pd.DataFrame(results)
         return df
+    
+import numpy as np
+from typing import List, Dict, Tuple
+
+# Reuse your hypervolume/spacing/generational_distance definitions or import them.
+def hypervolume(points: List[np.ndarray], ref_point: Tuple[float,float]):
+    hv = 0.0
+    sorted_points = sorted(points, key=lambda x: x[0])  # sort by cost
+    prev_cost = ref_point[0]
+    for cost, emissions in sorted_points:
+        hv += (prev_cost - cost) * (ref_point[1] - emissions)
+        prev_cost = cost
+    return hv
+
+def spacing(points: List[np.ndarray]):
+    points_arr = np.array(points)
+    distances = []
+    for i in range(len(points_arr)):
+        dists = [np.linalg.norm(points_arr[i] - points_arr[j]) for j in range(len(points_arr)) if i != j]
+        distances.append(min(dists))
+    return float(np.std(distances))
+
+def generational_distance(obtained: List[np.ndarray], true_pf: List[np.ndarray]):
+    distances = []
+    for p in obtained:
+        d = min([np.linalg.norm(p - q) for q in true_pf])
+        distances.append(d)
+    return float(np.mean(distances))
+
+
+# Helper to compute (cost, emissions) for one solution dict (same logic as your class)
+def solution_to_point(solution: Dict[str,int], optimizer: MultiObjectiveFleetOptimizer, size_distance: Tuple) -> np.ndarray:
+    vehicles = optimizer.vehicles_by_size_distance[size_distance]
+    vehicle_dict = {v['ID']: v for v in vehicles}
+
+    total_cost = 0.0
+    total_emissions = 0.0
+    for vid, n in solution.items():
+        if n > 0:
+            v = vehicle_dict[vid]
+            total_cost += optimizer.calculate_total_cost(n, v)
+            total_emissions += optimizer.calculate_total_emissions(n, v)
+    return np.array([float(total_cost), float(total_emissions)])
+
+
+# Convert a population (list of solution dicts) to a list of 2D points
+def population_to_points(population: List[Dict[str,int]], optimizer: MultiObjectiveFleetOptimizer, size_distance: Tuple):
+    pts = []
+    for sol in population:
+        # skip invalid solutions if you want
+        if optimizer.is_valid_solution(sol, size_distance):
+            pts.append(solution_to_point(sol, optimizer, size_distance))
+    return pts
+

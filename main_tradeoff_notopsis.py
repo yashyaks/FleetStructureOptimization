@@ -11,7 +11,7 @@ import pandas as pd
 import os
 from pprint import pprint
 
-def optimization(cost_weight, ce_weight, generations, population_size, prev_years, min_year, max_year):
+def optimization(cost_weight, ce_weight, generations, population_size, prev_years, min_year, max_year, table_prefix):
     print(cost_weight, ce_weight, generations, population_size, prev_years)
     va = VehicleAllocation()
     # tps = Topsis()
@@ -23,6 +23,7 @@ def optimization(cost_weight, ce_weight, generations, population_size, prev_year
     connection_string = os.getenv('OUTPUT_STRING')
     
     output_list = []
+    metrics_by_year = {}
     for year in range(min_year, max_year+1):
         print(f"Starting process for year {year}")
         df = va.allocate_vehicles(year)
@@ -84,7 +85,17 @@ def optimization(cost_weight, ce_weight, generations, population_size, prev_year
         print(f"Multiobjective Optimization...")
         mo = MultiObjectiveFleetOptimizer(merged_df, ce_weight, cost_weight)
         df = mo.get_optimized_results(year, generations, population_size)
+        size_distance = list(mo.vehicles_by_size_distance.keys())[0]  # pick a group
 
+        # Step 1: Generate population
+        population = mo.generate_initial_population(size_distance, population_size=100)
+
+        # Step 2: Evaluate metrics
+        metrics = mo.evaluate_population_metrics(population, size_distance)
+        print(metrics)
+        
+        metrics_by_year[year] = mo.evaluate_population_metrics(population, size_distance)
+        print(metrics_by_year)
         # df.to_csv(f'data/output/tradeoff/topsis/multi_objective_fleet_allocation_{year}.csv', index=False)
         print("Optimization done, output saved to file")
         

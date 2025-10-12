@@ -18,8 +18,8 @@ def fetch_data(table_name):
     return pd.read_sql(query, engine)
 
 # Fetch data from database tables
-topsis_df = fetch_data('topsis_multiobjective_summary_avg')
-no_topsis_df = fetch_data('parallel_topsis_multiobjective_summary_avg')
+topsis_df = fetch_data('topsis_50_multiobjective_summary_avg')
+no_topsis_df = fetch_data('topsis_single_year_multiobjective_summary_avg')
 
 # Apply t-test
 cost_ttest = ttest_ind(topsis_df['TotalCost'], no_topsis_df['TotalCost'])
